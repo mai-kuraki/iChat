@@ -8,13 +8,13 @@ import {
     Text,
     View,
     StatusBar,
-    TouchableNativeFeedback
+    TouchableNativeFeedback,
+    Image
 } from 'react-native';
 import MsgList from './MsgList';
 import ContactsList from './ContactsList';
-import Mine from './Mine';
+import Setting from './Setting';
 import Feather from 'react-native-vector-icons/Feather';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {TabViewAnimated, TabBar, SceneMap} from 'react-native-tab-view';
 
 const initialLayout = {
@@ -30,7 +30,7 @@ export default class TabList extends Component {
             routes: [
                 {key: 'ChatList', icon: 'message-circle', label: 'MESSAGE'},
                 {key: 'ContactsList', icon: 'users', label: 'CONTACTS'},
-                {key: 'Mine', icon: 'inbox', label: 'MINE'}
+                {key: 'Setting', icon: 'inbox', label: 'Setting'}
             ],
         }
     }
@@ -42,7 +42,7 @@ export default class TabList extends Component {
     renderScene = SceneMap({
         ChatList: MsgList,
         ContactsList: ContactsList,
-        Mine: Mine,
+        Setting: Setting,
     });
 
     renderIcon({route}) {
@@ -77,7 +77,7 @@ export default class TabList extends Component {
                         background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
                     >
                         <View style={styles.headerIcon}>
-                            <Feather name="align-left" size={20} color="#666"/>
+                            <Feather name="user" size={20} color="#666"/>
                         </View>
                     </TouchableNativeFeedback>
                     <View style={styles.headerTitleWrap}>
