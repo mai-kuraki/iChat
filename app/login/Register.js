@@ -41,8 +41,13 @@ export default class Register extends Component {
     };
 
     componentDidMount() {
+        this._isMounted = true;
         Keyboard.addListener('keyboardDidShow', this.keyboardWillShow.bind(this));
         Keyboard.addListener('keyboardDidHide', this.keyboardWillHide.bind(this));
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     keyboardWillShow() {
@@ -60,9 +65,11 @@ export default class Register extends Component {
                 duration: 250,
             }
         ).start();
-        this.setState({
-            keyborder: true,
-        })
+        if(this._isMounted) {
+            this.setState({
+                keyborder: true,
+            })
+        }
     }
 
     keyboardWillHide() {
@@ -80,9 +87,11 @@ export default class Register extends Component {
                 duration: 250,
             }
         ).start();
-        this.setState({
-            keyborder: false,
-        })
+        if(this._isMounted) {
+            this.setState({
+                keyborder: false,
+            })
+        }
     }
 
     pwdSecure(key) {
