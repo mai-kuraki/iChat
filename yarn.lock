@@ -4250,7 +4250,7 @@ react-native-tab-view@^0.0.77:
   dependencies:
     prop-types "^15.6.0"
 
-react-native-tab-view@~0.0.78:
+react-native-tab-view@^0.0.78, react-native-tab-view@~0.0.78:
   version "0.0.78"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-0.0.78.tgz#9b90730d89cbd34a03f0e0ab10e74ca7af945560"
   dependencies:

@@ -103,6 +103,8 @@ export default class Register extends Component {
             passwrod2 = this.state.password2;
         if(this.emailReg(email) && this.passwordReg(password) && this.passwordReg2(password, passwrod2)) {
             Alert.alert('注册成功');
+            const { navigate } = this.props.navigation;
+            navigate('SignIn')
         }
     };
 

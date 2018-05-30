@@ -7,8 +7,10 @@ import {
 
 import SignIn from './login/SignIn';
 import Register from './login/Register';
+import Tab from './main/Tab';
 
 const App = StackNavigator({
+    Tab: {screen: Tab},
     SignIn: {screen: SignIn},
     Register: {screen: Register},
 });

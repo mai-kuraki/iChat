@@ -92,7 +92,9 @@ export default class Login extends Component {
         let email = this.state.email,
             password = this.state.password;
         if(this.emailReg(email) && this.passwordReg(password)) {
-            Alert.alert('登录成功')
+            Alert.alert('登录成功');
+            const { navigate } = this.props.navigation;
+            navigate('Tab')
         }
     };
 
@@ -273,7 +275,5 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         right: 0,
         top: 24,
-    },
-    eye: {
     }
 });
