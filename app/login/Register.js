@@ -16,7 +16,7 @@ import {
 import { TextField } from 'react-native-material-textfield';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default class Login extends Component {
+export default class Register extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,9 +27,12 @@ export default class Login extends Component {
             emailError: '',
             password: '',
             passwordError: '',
+            password2: '',
+            password2Error: '',
             pwdSecure: true,
+            pwdSecure2: true,
             fabScale: new Animated.Value(1),
-            AniHeight: new Animated.Value(150),
+            AniHeight: new Animated.Value(130),
         };
     }
 
@@ -69,7 +72,7 @@ export default class Login extends Component {
         Animated.timing(
             this.state.AniHeight,
             {
-                toValue: 150,
+                toValue: 130,
                 duration: 250,
             }
         ).start();
@@ -78,10 +81,16 @@ export default class Login extends Component {
         })
     }
 
-    pwdSecure() {
-        this.setState({
-            pwdSecure: !this.state.pwdSecure,
-        })
+    pwdSecure(key) {
+        if(key == 1) {
+            this.setState({
+                pwdSecure: !this.state.pwdSecure,
+            })
+        }else {
+            this.setState({
+                pwdSecure2: !this.state.pwdSecure2,
+            })
+        }
     }
 
     submit() {
@@ -136,16 +145,16 @@ export default class Login extends Component {
                     barStyle="dark-content"
                 />
                 <TouchableNativeFeedback
-                    background={TouchableNativeFeedback.Ripple('rgba(255, 255, 255, .5)', false)}
+                    background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
                 >
-                    <Animated.View style={[styles.floating, {transform: [{scaleX: this.state.fabScale}, {scaleY: this.state.fabScale}],opacity: this.state.fabScale}]}>
-                        <Ionicons name="md-add" size={24} color="#FFF"/>
+                    <Animated.View style={[styles.backArrow, {transform: [{scaleX: this.state.fabScale}, {scaleY: this.state.fabScale}],opacity: this.state.fabScale}]}>
+                        <Ionicons name="md-arrow-back" size={24} color="#333"/>
                     </Animated.View>
                 </TouchableNativeFeedback>
                 <View style={styles.main}>
                     <Animated.View style={[styles.header, {height: this.state.AniHeight}]}>
                         <View style={styles.titleView}>
-                            <Text style={styles.title}>SING IN</Text>
+                            <Text style={styles.title}>Register</Text>
                         </View>
                     </Animated.View>
                     <TextField
@@ -174,19 +183,41 @@ export default class Login extends Component {
                     />
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
-                        onPress={this.pwdSecure.bind(this)}
+                        onPress={this.pwdSecure.bind(this, 1)}
                     >
                         <View style={styles.eyeWrapper}>
                             <Ionicons style={styles.eye} name={this.state.pwdSecure?'md-eye-off':'md-eye'} size={24} color="#333"/>
                         </View>
                     </TouchableNativeFeedback>
                     </View>
+                    <View>
+                        <TextField
+                            label='Confirm Password'
+                            secureTextEntry={this.state.pwdSecure2}
+                            lineWidth={1}
+                            value={this.state.password}
+                            error={this.state.passwordError}
+                            textColor="#333"
+                            baseColor="#666"
+                            tintColor="#333"
+                            onChangeText={ (password) => this.setState({ password: password }) }
+                            onFocus={() => {this.setState({passwordError: ''})}}
+                        />
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
+                            onPress={this.pwdSecure.bind(this, 2)}
+                        >
+                            <View style={styles.eyeWrapper}>
+                                <Ionicons style={styles.eye} name={this.state.pwdSecure2?'md-eye-off':'md-eye'} size={24} color="#333"/>
+                            </View>
+                        </TouchableNativeFeedback>
+                    </View>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('rgba(255, 255, 255, .5)', false)}
                         onPress={this.submit.bind(this)}
                     >
                         <View style={[styles.loginButton, (this.state.email && this.state.password)?styles.loginButtonActive:{}]}>
-                            <Text style={[styles.loginButtonLabel,(this.state.email && this.state.password)?styles.loginButtonLabelActive:{}]}>SING IN</Text>
+                            <Text style={[styles.loginButtonLabel,(this.state.email && this.state.password)?styles.loginButtonLabelActive:{}]}>REGISTER</Text>
                         </View>
                     </TouchableNativeFeedback>
                 </View>
@@ -227,18 +258,15 @@ const styles = StyleSheet.create({
     loginButtonLabelActive: {
         color: '#FFF',
     },
-    floating: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: '#333',
+    backArrow: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
         position: 'absolute',
-        bottom: 50,
-        right: 30,
+        top: 10,
+        left: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
-        elevation: 5,
     },
     bottom: {
         width: Dimensions.get('window').width,
