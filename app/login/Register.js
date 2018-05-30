@@ -36,6 +36,10 @@ export default class Register extends Component {
         };
     }
 
+    static navigationOptions = {
+        header: null,
+    };
+
     componentDidMount() {
         Keyboard.addListener('keyboardDidShow', this.keyboardWillShow.bind(this));
         Keyboard.addListener('keyboardDidHide', this.keyboardWillHide.bind(this));
@@ -95,9 +99,10 @@ export default class Register extends Component {
 
     submit() {
         let email = this.state.email,
-            password = this.state.password;
-        if(this.emailReg(email) && this.passwordReg(password)) {
-            Alert.alert('登录成功')
+            password = this.state.password,
+            passwrod2 = this.state.password2;
+        if(this.emailReg(email) && this.passwordReg(password) && this.passwordReg2(password, passwrod2)) {
+            Alert.alert('注册成功');
         }
     };
 
@@ -114,6 +119,35 @@ export default class Register extends Component {
             return false;
         }
     }
+
+    passwordReg2(password, password2) {
+        if(password) {
+            if(password2) {
+                if(password === password2) {
+                    this.setState({
+                        passwordError2: '',
+                    });
+                    return true;
+                }else {
+                    this.setState({
+                        passwordError2: 'inconsistent password',
+                    });
+                    return false;
+                }
+            }else {
+                this.setState({
+                    passwordError2: 'confirm password is required',
+                });
+                return false;
+            }
+        }else {
+            this.setState({
+                passwordError: 'password is required',
+            });
+            return false;
+        }
+    }
+
 
     emailReg(email) {
         let reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
@@ -138,6 +172,7 @@ export default class Register extends Component {
     }
 
     render() {
+        const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -146,6 +181,7 @@ export default class Register extends Component {
                 />
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
+                    onPress={() => {navigate('SignIn')}}
                 >
                     <Animated.View style={[styles.backArrow, {transform: [{scaleX: this.state.fabScale}, {scaleY: this.state.fabScale}],opacity: this.state.fabScale}]}>
                         <Ionicons name="md-arrow-back" size={24} color="#333"/>
@@ -195,13 +231,13 @@ export default class Register extends Component {
                             label='Confirm Password'
                             secureTextEntry={this.state.pwdSecure2}
                             lineWidth={1}
-                            value={this.state.password}
-                            error={this.state.passwordError}
+                            value={this.state.password2}
+                            error={this.state.passwordError2}
                             textColor="#333"
                             baseColor="#666"
                             tintColor="#333"
-                            onChangeText={ (password) => this.setState({ password: password }) }
-                            onFocus={() => {this.setState({passwordError: ''})}}
+                            onChangeText={ (password) => this.setState({ password2: password }) }
+                            onFocus={() => {this.setState({passwordError2: ''})}}
                         />
                         <TouchableNativeFeedback
                             background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
@@ -216,8 +252,8 @@ export default class Register extends Component {
                         background={TouchableNativeFeedback.Ripple('rgba(255, 255, 255, .5)', false)}
                         onPress={this.submit.bind(this)}
                     >
-                        <View style={[styles.loginButton, (this.state.email && this.state.password)?styles.loginButtonActive:{}]}>
-                            <Text style={[styles.loginButtonLabel,(this.state.email && this.state.password)?styles.loginButtonLabelActive:{}]}>REGISTER</Text>
+                        <View style={[styles.loginButton, (this.state.email && this.state.password && this.state.password2)?styles.loginButtonActive:{}]}>
+                            <Text style={[styles.loginButtonLabel,(this.state.email && this.state.password && this.state.password2)?styles.loginButtonLabelActive:{}]}>REGISTER</Text>
                         </View>
                     </TouchableNativeFeedback>
                 </View>

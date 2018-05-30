@@ -33,6 +33,10 @@ export default class Login extends Component {
         };
     }
 
+    static navigationOptions = {
+        header: null,
+    };
+
     componentDidMount() {
         Keyboard.addListener('keyboardDidShow', this.keyboardWillShow.bind(this));
         Keyboard.addListener('keyboardDidHide', this.keyboardWillHide.bind(this));
@@ -129,6 +133,7 @@ export default class Login extends Component {
     }
 
     render() {
+        const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
                 <StatusBar
@@ -137,6 +142,7 @@ export default class Login extends Component {
                 />
                 <TouchableNativeFeedback
                     background={TouchableNativeFeedback.Ripple('rgba(255, 255, 255, .5)', false)}
+                    onPress={() => {navigate('Register')}}
                 >
                     <Animated.View style={[styles.floating, {transform: [{scaleX: this.state.fabScale}, {scaleY: this.state.fabScale}],opacity: this.state.fabScale}]}>
                         <Ionicons name="md-add" size={24} color="#FFF"/>

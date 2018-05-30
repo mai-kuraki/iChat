@@ -1,4 +1,4 @@
 import { AppRegistry } from 'react-native';
-import App from './app/login/Register';
+import App from './app/App';
 
 AppRegistry.registerComponent('iChat', () => App);
