@@ -115,7 +115,7 @@ export default class Login extends Component {
             return true;
         }else {
             this.setState({
-                passwordError: 'password is required',
+                passwordError: '密码需必填',
             });
             return false;
         }
@@ -126,13 +126,13 @@ export default class Login extends Component {
         let res = reg.test(email);
         if(!email) {
             this.setState({
-                emailError: 'Email is required',
+                emailError: '邮箱需必填',
             });
             return false;
         }
         if(!res) {
             this.setState({
-                emailError: 'Email format is incorrect',
+                emailError: '邮箱格式不正确',
             });
             return false;
         }else {
@@ -162,11 +162,11 @@ export default class Login extends Component {
                 <View style={styles.main}>
                     <Animated.View style={[styles.header, {height: this.state.AniHeight}]}>
                         <View style={styles.titleView}>
-                            <Text style={styles.title}>SING IN</Text>
+                            <Text style={styles.title}>登录</Text>
                         </View>
                     </Animated.View>
                     <TextField
-                        label='Email'
+                        label='邮箱'
                         value={this.state.email}
                         error={this.state.emailError}
                         lineWidth={1}
@@ -178,7 +178,7 @@ export default class Login extends Component {
                     />
                     <View>
                     <TextField
-                        label='Password'
+                        label='密码'
                         secureTextEntry={this.state.pwdSecure}
                         lineWidth={1}
                         value={this.state.password}
@@ -203,7 +203,7 @@ export default class Login extends Component {
                         onPress={this.submit.bind(this)}
                     >
                         <View style={[styles.loginButton, (this.state.email && this.state.password)?styles.loginButtonActive:{}]}>
-                            <Text style={[styles.loginButtonLabel,(this.state.email && this.state.password)?styles.loginButtonLabelActive:{}]}>SING IN</Text>
+                            <Text style={[styles.loginButtonLabel,(this.state.email && this.state.password)?styles.loginButtonLabelActive:{}]}>登 录</Text>
                         </View>
                     </TouchableNativeFeedback>
                 </View>

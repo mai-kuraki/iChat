@@ -9,11 +9,13 @@ import {
     View,
     StatusBar,
     TouchableNativeFeedback,
-    Image
+    Image,
+    DrawerLayoutAndroid
 } from 'react-native';
 import MsgList from './MsgList';
 import ContactsList from './ContactsList';
 import Setting from './Setting';
+import Profile from './Profile';
 import Feather from 'react-native-vector-icons/Feather';
 import {TabViewAnimated, TabBar, SceneMap} from 'react-native-tab-view';
 
@@ -27,10 +29,11 @@ export default class TabList extends Component {
         super(props);
         this.state = {
             index: 0,
+            statusBarHide: false,
             routes: [
-                {key: 'ChatList', icon: 'message-circle', label: 'MESSAGE'},
-                {key: 'ContactsList', icon: 'users', label: 'CONTACTS'},
-                {key: 'Setting', icon: 'inbox', label: 'Setting'}
+                {key: 'ChatList', icon: 'message-circle', label: '消息'},
+                {key: 'ContactsList', icon: 'users', label: '联系人'},
+                {key: 'Setting', icon: 'inbox', label: '设置'}
             ],
         }
     }
@@ -51,10 +54,24 @@ export default class TabList extends Component {
         )
     }
 
+    drawerHandle(state) {
+        if(state) {
+            this.refs.drawerLayoutAndroid.openDrawer();
+        }else {
+            this.refs.drawerLayoutAndroid.closeDrawer();
+        }
+    }
+
     handleIndexChange(index) {
         this.setState({
             index: index,
         });
+    }
+
+    switchStatusBar() {
+        this.setState({
+            statusBarHide: !this.state.statusBarHide,
+        })
     }
 
     renderHeader = props => <TabBar
@@ -65,45 +82,59 @@ export default class TabList extends Component {
         {...props} />;
 
     render() {
-        const { navigate } = this.props.navigation;
+        const {navigate} = this.props.navigation;
         return (
-            <View style={styles.container}>
-                <StatusBar
-                    backgroundColor="#FFF"
-                    barStyle="dark-content"
-                />
-                <View style={styles.header}>
-                    <TouchableNativeFeedback
-                        background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
-                    >
-                        <View style={styles.headerIcon}>
-                            <Feather name="user" size={20} color="#666"/>
+            <DrawerLayoutAndroid
+                ref="drawerLayoutAndroid"
+                drawerWidth={Dimensions.get('window').width}
+                drawerPosition={DrawerLayoutAndroid.positions.Left}
+                renderNavigationView={() => <Profile close={this.drawerHandle.bind(this)}/>}
+                onDrawerClose={() => {
+                    this.switchStatusBar();
+                }}
+            >
+                <View style={styles.container}>
+                    <StatusBar
+                        backgroundColor="#FFF"
+                        barStyle="dark-content"
+                        hidden={false}
+                    />
+                    <View style={styles.header}>
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
+                            onPress={this.drawerHandle.bind(this, true)}
+                        >
+                            <View style={styles.headerIcon}>
+                                <Feather name="user" size={20} color="#666"/>
+                            </View>
+                        </TouchableNativeFeedback>
+                        <View style={styles.headerTitleWrap}>
+                            <Text style={styles.headerTitle}>
+                                {
+                                    this.state.routes[this.state.index].label
+                                }
+                            </Text>
                         </View>
-                    </TouchableNativeFeedback>
-                    <View style={styles.headerTitleWrap}>
-                        <Text style={styles.headerTitle}>
-                            {
-                                this.state.routes[this.state.index].label
-                            }
-                        </Text>
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
+                            onPress={() => {
+                                navigate('SignIn')
+                            }}
+                        >
+                            <View style={styles.headerIcon}>
+                                <Feather name="search" size={20} color="#666"/>
+                            </View>
+                        </TouchableNativeFeedback>
                     </View>
-                    <TouchableNativeFeedback
-                        background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
-                        onPress={() => {navigate('SignIn')}}
-                    >
-                        <View style={styles.headerIcon}>
-                            <Feather name="search" size={20} color="#666"/>
-                        </View>
-                    </TouchableNativeFeedback>
+                    <TabViewAnimated
+                        navigationState={this.state}
+                        renderScene={this.renderScene}
+                        renderHeader={this.renderHeader}
+                        onIndexChange={this.handleIndexChange.bind(this)}
+                        initialLayout={initialLayout}
+                    />
                 </View>
-                <TabViewAnimated
-                    navigationState={this.state}
-                    renderScene={this.renderScene}
-                    renderHeader={this.renderHeader}
-                    onIndexChange={this.handleIndexChange.bind(this)}
-                    initialLayout={initialLayout}
-                />
-            </View>
+            </DrawerLayoutAndroid>
         )
     }
 }
