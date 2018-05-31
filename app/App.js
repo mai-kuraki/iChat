@@ -8,9 +8,11 @@ import {
 import SignIn from './login/SignIn';
 import Register from './login/Register';
 import Tab from './main/Tab';
+import Chat from './main/Chat';
 
 const App = StackNavigator({
     Tab: {screen: Tab},
+    Chat: {screen: Chat},
     SignIn: {screen: SignIn},
     Register: {screen: Register},
 });

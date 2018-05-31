@@ -29,7 +29,6 @@ export default class TabList extends Component {
         super(props);
         this.state = {
             index: 0,
-            statusBarHide: false,
             routes: [
                 {key: 'ChatList', icon: 'message-circle', label: '消息'},
                 {key: 'ContactsList', icon: 'users', label: '联系人'},
@@ -42,11 +41,25 @@ export default class TabList extends Component {
         header: null,
     };
 
-    renderScene = SceneMap({
-        ChatList: MsgList,
-        ContactsList: ContactsList,
-        Setting: Setting,
-    });
+    // renderScene = SceneMap({
+    //     ChatList: MsgList,
+    //     ContactsList: ContactsList,
+    //     Setting: Setting,
+    // });
+
+    renderScene = ({ route }) => {
+        const navigation = this.props.navigation;
+        switch (route.key) {
+            case 'ChatList':
+                return <MsgList navigation={navigation}/>;
+            case 'ContactsList':
+                return <ContactsList navigation={navigation}/>;
+            case 'Setting':
+                return <Setting navigation={navigation}/>;
+            default:
+                return null;
+        }
+    }
 
     renderIcon({route}) {
         return (
@@ -55,23 +68,19 @@ export default class TabList extends Component {
     }
 
     drawerHandle(state) {
-        if(state) {
-            this.refs.drawerLayoutAndroid.openDrawer();
-        }else {
-            this.refs.drawerLayoutAndroid.closeDrawer();
-        }
+        setTimeout(() => {
+            if(state) {
+                this.refs.drawerLayoutAndroid.openDrawer();
+            }else {
+                this.refs.drawerLayoutAndroid.closeDrawer();
+            }
+        }, 200);
     }
 
     handleIndexChange(index) {
         this.setState({
             index: index,
         });
-    }
-
-    switchStatusBar() {
-        this.setState({
-            statusBarHide: !this.state.statusBarHide,
-        })
     }
 
     renderHeader = props => <TabBar
@@ -89,15 +98,11 @@ export default class TabList extends Component {
                 drawerWidth={Dimensions.get('window').width}
                 drawerPosition={DrawerLayoutAndroid.positions.Left}
                 renderNavigationView={() => <Profile close={this.drawerHandle.bind(this)}/>}
-                onDrawerClose={() => {
-                    this.switchStatusBar();
-                }}
             >
                 <View style={styles.container}>
                     <StatusBar
                         backgroundColor="#FFF"
                         barStyle="dark-content"
-                        hidden={false}
                     />
                     <View style={styles.header}>
                         <TouchableNativeFeedback

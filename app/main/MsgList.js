@@ -102,12 +102,19 @@ export default class MsgList extends Component {
     }
 
     render() {
+        const {navigate} = this.props.navigation;
         return (
             <View style={styles.container}>
                 <FlatList
                     data={this.state.item}
                     renderItem={({item}) =>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={() => {
+                                setTimeout(() => {
+                                    navigate('Chat');
+                                }, 200);
+                            }}
+                        >
                             <View style={styles.row}>
                                 <View style={styles.avator}>
                                     <Image source={item.avator} style={styles.avatorPic}/>
