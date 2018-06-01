@@ -73,8 +73,8 @@ export default class Profile extends Component {
                         </TouchableNativeFeedback>
                         <TouchableNativeFeedback>
                             <View style={styles.button}>
-                                <Feather name="calendar" size={28} color="#333"/>
-                                <Text style={styles.buttonLabel}>设置生日</Text>
+                                <Feather name="at-sign" size={28} color="#333"/>
+                                <Text style={styles.buttonLabel}>设置邮箱</Text>
                             </View>
                         </TouchableNativeFeedback>
                         <TouchableNativeFeedback>

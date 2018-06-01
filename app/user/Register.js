@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import config from '../config';
+const api = config.api;
 
 export default class Register extends Component {
     constructor(props) {
@@ -23,11 +25,11 @@ export default class Register extends Component {
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
             keyborder: false,
-            email: '',
+            email: '111@qq.com',
             emailError: '',
-            password: '',
+            password: '111',
             passwordError: '',
-            password2: '',
+            password2: '111',
             password2Error: '',
             pwdSecure: true,
             pwdSecure2: true,
@@ -111,9 +113,30 @@ export default class Register extends Component {
             password = this.state.password,
             passwrod2 = this.state.password2;
         if(this.emailReg(email) && this.passwordReg(password) && this.passwordReg2(password, passwrod2)) {
-            Alert.alert('注册成功');
-            const { navigate } = this.props.navigation;
-            navigate('SignIn')
+            console.log({
+                email: email,
+                password: password,
+            });
+            fetch(`${api}/user/add`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                })
+            }).then((response) => {
+                console.log(response)
+                return response.json();
+            }).then((data) => {
+                console.log(data)
+            }).catch((error) => {
+                console.error(error);
+            });
+            // const { navigate } = this.props.navigation;
+            // navigate('SignIn')
         }
     };
 
