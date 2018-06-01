@@ -68,13 +68,11 @@ export default class TabList extends Component {
     }
 
     drawerHandle(state) {
-        setTimeout(() => {
-            if(state) {
-                this.refs.drawerLayoutAndroid.openDrawer();
-            }else {
-                this.refs.drawerLayoutAndroid.closeDrawer();
-            }
-        }, 200);
+        if(state) {
+            this.refs.drawerLayoutAndroid.openDrawer();
+        }else {
+            this.refs.drawerLayoutAndroid.closeDrawer();
+        }
     }
 
     handleIndexChange(index) {

@@ -110,9 +110,7 @@ export default class MsgList extends Component {
                     renderItem={({item}) =>
                         <TouchableNativeFeedback
                             onPress={() => {
-                                setTimeout(() => {
-                                    navigate('Chat');
-                                }, 200);
+                                navigate('Chat');
                             }}
                         >
                             <View style={styles.row}>
