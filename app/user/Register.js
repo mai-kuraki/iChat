@@ -11,13 +11,14 @@ import {
     StatusBar,
     TouchableNativeFeedback,
     Keyboard,
-    Alert
+    Alert,
+    ProgressBarAndroid
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Snackbar from 'react-native-snackbar';
 import config from '../config';
 const api = config.api;
-
 export default class Register extends Component {
     constructor(props) {
         super(props);
@@ -25,16 +26,17 @@ export default class Register extends Component {
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
             keyborder: false,
-            email: '111@qq.com',
+            email: '',
             emailError: '',
-            password: '111',
+            password: '',
             passwordError: '',
-            password2: '111',
+            password2: '',
             password2Error: '',
             pwdSecure: true,
             pwdSecure2: true,
             fabScale: new Animated.Value(1),
             AniHeight: new Animated.Value(130),
+            loading: false,
         };
     }
 
@@ -108,35 +110,64 @@ export default class Register extends Component {
         }
     }
 
+    loadingState(state) {
+        this.setState({
+            loading: state,
+        })
+    }
+
     submit() {
         let email = this.state.email,
             password = this.state.password,
             passwrod2 = this.state.password2;
         if(this.emailReg(email) && this.passwordReg(password) && this.passwordReg2(password, passwrod2)) {
-            console.log({
-                email: email,
-                password: password,
-            });
-            fetch(`${api}/user/add`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                })
-            }).then((response) => {
-                console.log(response)
-                return response.json();
-            }).then((data) => {
-                console.log(data)
-            }).catch((error) => {
-                console.error(error);
-            });
-            // const { navigate } = this.props.navigation;
-            // navigate('SignIn')
+            this.loadingState(true);
+            try{
+                fetch(`${api}/user/add`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                    })
+                }).then((response) => {
+                    try{
+                        return response.json();
+                    }catch (e) {
+                        console.log(e);
+                    }
+                }).then((data) => {
+                    this.loadingState(false);
+                    if(data.code == 200) {
+                        Snackbar.show({
+                            title: '注册成功, 前往登录',
+                            duration: 1500,
+                        });
+                        setTimeout(() => {
+                            const { navigate } = this.props.navigation;
+                            navigate('SignIn')
+                        }, 1500);
+                    }else {
+                        Snackbar.show({
+                            title: `注册失败, ${data.msg}`,
+                            duration: 8000,
+                            action: {
+                                title: '知道了',
+                                color: '#4BCCBE',
+                            },
+                        })
+                    }
+                }).catch((error) => {
+                    this.loadingState(false);
+                    console.error(error);
+                });
+            }catch (e) {
+                this.loadingState(false)
+                console.log(e)
+            }
         }
     };
 
@@ -291,6 +322,15 @@ export default class Register extends Component {
                         </View>
                     </TouchableNativeFeedback>
                 </View>
+                {
+                    this.state.loading?
+                        <View style={styles.loading}>
+                            <ProgressBarAndroid
+                                color="#4BCCBE"
+                                styleAttr="Inverse"
+                            />
+                        </View>:null
+                }
             </View>
         )
     }
@@ -300,6 +340,17 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFF',
         flex: 1,
+    },
+    loading: {
+        position: 'absolute',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        left: 0,
+        top: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 10,
+        paddingBottom: 100,
     },
     main: {
         flex: 1,

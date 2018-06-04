@@ -4236,6 +4236,10 @@ react-native-safe-area-view@^0.8.0:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
+react-native-snackbar@^0.4.7:
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/react-native-snackbar/-/react-native-snackbar-0.4.7.tgz#051a63da5a6dfcf9bbe3852f2165d366a42c6fb4"
+
 react-native-svg@^6.3.1:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-6.3.1.tgz#06a573f17c59ce953a56fd62e776fd79d632d765"

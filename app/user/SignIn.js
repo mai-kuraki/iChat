@@ -11,10 +11,14 @@ import {
     StatusBar,
     TouchableNativeFeedback,
     Keyboard,
-    Alert
+    Alert,
+    ProgressBarAndroid
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Snackbar from 'react-native-snackbar';
+import config from '../config';
+const api = config.api;
 
 export default class Login extends Component {
     constructor(props) {
@@ -23,13 +27,14 @@ export default class Login extends Component {
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
             keyborder: false,
-            email: '',
+            email: 'zhengliuyang@huanqiu.com',
             emailError: '',
-            password: '',
+            password: 'Aa111111',
             passwordError: '',
             pwdSecure: true,
             fabScale: new Animated.Value(1),
             AniHeight: new Animated.Value(150),
+            loading: false,
         };
     }
 
@@ -97,13 +102,61 @@ export default class Login extends Component {
         })
     }
 
+    loadingState(state) {
+        this.setState({
+            loading: state,
+        })
+    }
+
     submit() {
         let email = this.state.email,
             password = this.state.password;
         if(this.emailReg(email) && this.passwordReg(password)) {
-            Alert.alert('登录成功');
-            const { navigate } = this.props.navigation;
-            navigate('Tab')
+            this.loadingState(true);
+            try{
+                fetch(`${api}/user/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                    })
+                }).then((response) => {
+                    try{
+                        return response.json();
+                    }catch (e) {
+                        console.log(e);
+                    }
+                }).then((data) => {
+                    this.loadingState(false);
+                    if(data.code == 200) {
+                        Snackbar.show({
+                            title: '登录成功',
+                            duration: 1500,
+                        });
+                        const { navigate } = this.props.navigation;
+                        navigate('Tab');
+                    }else {
+                        Snackbar.show({
+                            title: `登录失败, ${data.msg}`,
+                            duration: 8000,
+                            action: {
+                                title: '知道了',
+                                color: '#4BCCBE',
+                            },
+                        })
+                    }
+                }).catch((error) => {
+                    this.loadingState(false);
+                    console.error(error);
+                });
+            }catch (e) {
+                this.loadingState(false);
+                console.log(e)
+            }
         }
     };
 
@@ -207,6 +260,15 @@ export default class Login extends Component {
                         </View>
                     </TouchableNativeFeedback>
                 </View>
+                {
+                    this.state.loading?
+                        <View style={styles.loading}>
+                            <ProgressBarAndroid
+                                color="#4BCCBE"
+                                styleAttr="Inverse"
+                            />
+                        </View>:null
+                }
             </View>
         )
     }
@@ -216,6 +278,17 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFF',
         flex: 1,
+    },
+    loading: {
+        position: 'absolute',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        left: 0,
+        top: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 10,
+        paddingBottom: 100,
     },
     main: {
         flex: 1,
