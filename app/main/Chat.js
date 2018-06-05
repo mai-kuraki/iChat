@@ -12,18 +12,70 @@ import {
     StatusBar,
     Image,
     TextInput,
-    ScrollView
+    ScrollView,
+    AsyncStorage
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
+import io from '../utils/socket';
+import jwtDecode from 'jwt-decode';
 export default class Chat extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            input: '',
+            items: [],
+            profile: {},
+        }
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem('webToken', (error, token) => {
+            if(token) {
+                let profile = jwtDecode(token);
+                this.setState({
+                    profile: profile,
+                })
+            }
+        });
+        io.on('message', (message) => {
+            let items = this.state.items;
+            if(message.uid != this.state.profile.uid) {
+                items.push({
+                    key: new Date().getTime(),
+                    message: message.message,
+                    self: false,
+                });
+                this.setState({
+                    items: items,
+                })
+            }
+        });
     }
 
     static navigationOptions = {
         header: null,
     };
+
+    submit() {
+        let state = this.state;
+        let input = state.input;
+        let items = state.items;
+        let profile = state.profile;
+        items.push({
+            key: new Date().getTime(),
+            message: input,
+            self: true,
+        });
+        io.emit('sendMessage', {
+            uid: profile.uid,
+            message: input,
+        });
+        this.setState({
+            input: '',
+            items: items,
+        })
+    }
 
     render() {
         const {navigate} = this.props.navigation;
@@ -50,166 +102,37 @@ export default class Chat extends Component {
                 </View>
                 <View style={styles.chatItem}>
                     <ScrollView style={styles.scroll}>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                            <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                            </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                            <View style={[styles.chatContent, styles.chatContentRight]}>
-                                <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                            </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                                <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                                <View style={[styles.chatContent, styles.chatContentRight]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                                </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                                <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                                <View style={[styles.chatContent, styles.chatContentRight]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                                </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                                <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                                <View style={[styles.chatContent, styles.chatContentRight]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                                </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                                <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                                <View style={[styles.chatContent, styles.chatContentRight]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                                </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                                <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                                <View style={[styles.chatContent, styles.chatContentRight]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                                </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                                <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                                <View style={[styles.chatContent, styles.chatContentRight]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                                </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
-                        <View style={styles.side}>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
-                            </View>
-                            <View style={[styles.wrap, styles.wrapLeft]}>
-                                <View style={[styles.chatContent, styles.chatContentLeft]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtLeft]}>Look, I wanted to work today...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.mine}>
-                            <View style={[styles.wrap, styles.wrapRight]}>
-                                <View style={[styles.chatContent, styles.chatContentRight]}>
-                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>Are you really sure?</Text>
-                                </View>
-                            </View>
-                            <View style={styles.avator}>
-                                <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
-                            </View>
-                        </View>
+                        {
+                            this.state.items.map((data) => {
+                               if(data.self) {
+                                   return (
+                                       <View style={styles.mine}>
+                                           <View style={[styles.wrap, styles.wrapRight]}>
+                                               <View style={[styles.chatContent, styles.chatContentRight]}>
+                                                   <Text style={[styles.chatTxt, styles.chatTxtRight]}>{data.message}</Text>
+                                               </View>
+                                           </View>
+                                           <View style={styles.avator}>
+                                               <Image source={require('../images/av2.jpg')} style={styles.avatorPic}/>
+                                           </View>
+                                       </View>
+                                   )
+                               } else {
+                                   return (
+                                       <View style={styles.side}>
+                                           <View style={styles.avator}>
+                                               <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
+                                           </View>
+                                           <View style={[styles.wrap, styles.wrapLeft]}>
+                                               <View style={[styles.chatContent, styles.chatContentLeft]}>
+                                                   <Text style={[styles.chatTxt, styles.chatTxtLeft]}>{data.message}</Text>
+                                               </View>
+                                           </View>
+                                       </View>
+                                   )
+                               }
+                            })
+                        }
                         <View style={{height: 50}}></View>
                     </ScrollView>
                 </View>
@@ -222,7 +145,15 @@ export default class Chat extends Component {
                         </View>
                     </TouchableNativeFeedback>
                     <View style={styles.bottomInput}>
-                        <TextInput></TextInput>
+                        <TextInput
+                            value={this.state.input}
+                            onChangeText={(text) => {
+                                this.setState({
+                                    input: text,
+                                })
+                            }}
+                            onSubmitEditing={this.submit.bind(this)}
+                        />
                     </View>
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}

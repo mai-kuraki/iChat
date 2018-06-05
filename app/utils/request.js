@@ -29,7 +29,6 @@ const request = (url, method, body, headers) => {
                     console.log(e);
                 }
             }).then((data) => {
-                console.log(data)
                 resolve(data);
             }).catch((error) => {
                 reject(error);

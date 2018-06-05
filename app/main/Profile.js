@@ -69,7 +69,7 @@ export default class Profile extends Component {
                         </TouchableNativeFeedback>
                         <View style={styles.info}>
                             <Text style={styles.nick}>{this.state.profile.nick || ''}</Text>
-                            <Text style={styles.id}>ID_Uxdispa</Text>
+                            <Text style={styles.id}>{(this.state.profile.uid || '').substr(0, 12) }</Text>
                             <Text style={styles.email}>{this.state.profile.email || ''}</Text>
                         </View>
                     </View>
