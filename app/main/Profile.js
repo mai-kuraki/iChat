@@ -11,19 +11,46 @@ import {
     TouchableNativeFeedback,
     TouchableWithoutFeedback,
     Image,
+    AsyncStorage
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
+import config from '../config';
+import request from '../utils/request';
+import jwtDecode from 'jwt-decode';
+const api = config.api;
 export default class Profile extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            profile: {},
+        }
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem('webToken', (error, token) => {
+            if(token) {
+                let profile = jwtDecode(token);
+                this.setState({
+                    profile: profile,
+                })
+            }
+        });
     }
 
     static navigationOptions = {
         header: null,
     };
+
+    logout() {
+        request(`${api}/user/logout`, 'GET').then((data) => {
+            if(data.code == 200) {
+                AsyncStorage.removeItem('webToken');
+                const { navigate } = this.props.navigation;
+                navigate('SignIn');
+            }
+        });
+    }
 
     render() {
         return (
@@ -41,9 +68,9 @@ export default class Profile extends Component {
                             </View>
                         </TouchableNativeFeedback>
                         <View style={styles.info}>
-                            <Text style={styles.nick}>Emily Dove</Text>
+                            <Text style={styles.nick}>{this.state.profile.nick || ''}</Text>
                             <Text style={styles.id}>ID_Uxdispa</Text>
-                            <Text style={styles.email}>exp@163.com</Text>
+                            <Text style={styles.email}>{this.state.profile.email || ''}</Text>
                         </View>
                     </View>
                     <View style={styles.buttonItem}>
@@ -77,7 +104,7 @@ export default class Profile extends Component {
                                 <Text style={styles.buttonLabel}>设置邮箱</Text>
                             </View>
                         </TouchableNativeFeedback>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback onPress={this.logout.bind(this)}>
                             <View style={styles.button}>
                                 <Feather name="log-out" size={28} color="#333"/>
                                 <Text style={styles.buttonLabel}>退出</Text>

@@ -10,7 +10,8 @@ import {
     StatusBar,
     TouchableNativeFeedback,
     Image,
-    DrawerLayoutAndroid
+    DrawerLayoutAndroid,
+    AsyncStorage
 } from 'react-native';
 import MsgList from './MsgList';
 import ContactsList from './ContactsList';
@@ -40,6 +41,15 @@ export default class TabList extends Component {
     static navigationOptions = {
         header: null,
     };
+
+    componentWillMount() {
+        AsyncStorage.getItem('webToken', (error, token) => {
+            if(!token) {
+                const { navigate } = this.props.navigation;
+                navigate('SignIn');
+            }
+        })
+    }
 
     // renderScene = SceneMap({
     //     ChatList: MsgList,
@@ -95,7 +105,7 @@ export default class TabList extends Component {
                 ref="drawerLayoutAndroid"
                 drawerWidth={Dimensions.get('window').width}
                 drawerPosition={DrawerLayoutAndroid.positions.Left}
-                renderNavigationView={() => <Profile close={this.drawerHandle.bind(this)}/>}
+                renderNavigationView={() => <Profile navigation={this.props.navigation} close={this.drawerHandle.bind(this)}/>}
             >
                 <View style={styles.container}>
                     <StatusBar

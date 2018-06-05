@@ -18,6 +18,7 @@ import { TextField } from 'react-native-material-textfield';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Snackbar from 'react-native-snackbar';
 import config from '../config';
+import request from '../utils/request';
 const api = config.api;
 export default class Register extends Component {
     constructor(props) {
@@ -122,52 +123,34 @@ export default class Register extends Component {
             passwrod2 = this.state.password2;
         if(this.emailReg(email) && this.passwordReg(password) && this.passwordReg2(password, passwrod2)) {
             this.loadingState(true);
-            try{
-                fetch(`${api}/user/add`, {
-                    method: 'PUT',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        password: password,
+            request(`${api}/user/add`, 'PUT', {
+                email: email,
+                password: password,
+            }).then((data) => {
+                this.loadingState(false);
+                if(data.code == 200) {
+                    Snackbar.show({
+                        title: '注册成功, 前往登录',
+                        duration: 1500,
+                    });
+                    setTimeout(() => {
+                        const { navigate } = this.props.navigation;
+                        navigate('SignIn')
+                    }, 1500);
+                }else {
+                    Snackbar.show({
+                        title: `注册失败, ${data.msg}`,
+                        duration: 8000,
+                        action: {
+                            title: '知道了',
+                            color: '#4BCCBE',
+                        },
                     })
-                }).then((response) => {
-                    try{
-                        return response.json();
-                    }catch (e) {
-                        console.log(e);
-                    }
-                }).then((data) => {
-                    this.loadingState(false);
-                    if(data.code == 200) {
-                        Snackbar.show({
-                            title: '注册成功, 前往登录',
-                            duration: 1500,
-                        });
-                        setTimeout(() => {
-                            const { navigate } = this.props.navigation;
-                            navigate('SignIn')
-                        }, 1500);
-                    }else {
-                        Snackbar.show({
-                            title: `注册失败, ${data.msg}`,
-                            duration: 8000,
-                            action: {
-                                title: '知道了',
-                                color: '#4BCCBE',
-                            },
-                        })
-                    }
-                }).catch((error) => {
-                    this.loadingState(false);
-                    console.error(error);
-                });
-            }catch (e) {
-                this.loadingState(false)
-                console.log(e)
-            }
+                }
+            }).catch((error) => {
+                this.loadingState(false);
+                console.error(error);
+            });
         }
     };
 

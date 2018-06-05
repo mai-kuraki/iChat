@@ -4,17 +4,16 @@
 import {
     StackNavigator,
 } from 'react-navigation';
-
 import SignIn from './user/SignIn';
 import Register from './user/Register';
 import Tab from './main/Tab';
 import Chat from './main/Chat';
 // GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 const App = StackNavigator({
+    Tab: {screen: Tab},
+    Chat: {screen: Chat},
     SignIn: {screen: SignIn},
     Register: {screen: Register},
-    Chat: {screen: Chat},
-    Tab: {screen: Tab},
 });
 
 export default App;

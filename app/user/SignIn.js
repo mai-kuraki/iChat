@@ -12,12 +12,14 @@ import {
     TouchableNativeFeedback,
     Keyboard,
     Alert,
-    ProgressBarAndroid
+    ProgressBarAndroid,
+    AsyncStorage
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Snackbar from 'react-native-snackbar';
 import config from '../config';
+import request from '../utils/request';
 const api = config.api;
 
 export default class Login extends Component {
@@ -27,9 +29,9 @@ export default class Login extends Component {
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
             keyborder: false,
-            email: 'zhengliuyang@huanqiu.com',
+            email: '',
             emailError: '',
-            password: 'Aa111111',
+            password: '',
             passwordError: '',
             pwdSecure: true,
             fabScale: new Animated.Value(1),
@@ -108,55 +110,43 @@ export default class Login extends Component {
         })
     }
 
+    toTab() {
+        const { navigate } = this.props.navigation;
+        navigate('Tab');
+    }
+
     submit() {
         let email = this.state.email,
             password = this.state.password;
         if(this.emailReg(email) && this.passwordReg(password)) {
             this.loadingState(true);
-            try{
-                fetch(`${api}/user/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        password: password,
-                    })
-                }).then((response) => {
-                    try{
-                        return response.json();
-                    }catch (e) {
-                        console.log(e);
-                    }
-                }).then((data) => {
-                    this.loadingState(false);
-                    if(data.code == 200) {
-                        Snackbar.show({
-                            title: '登录成功',
-                            duration: 1500,
-                        });
-                        const { navigate } = this.props.navigation;
-                        navigate('Tab');
-                    }else {
-                        Snackbar.show({
-                            title: `登录失败, ${data.msg}`,
-                            duration: 8000,
-                            action: {
-                                title: '知道了',
-                                color: '#4BCCBE',
-                            },
-                        })
-                    }
-                }).catch((error) => {
-                    this.loadingState(false);
-                    console.error(error);
-                });
-            }catch (e) {
+            request(`${api}/user/login`, 'POST', {
+                email: email,
+                password: password,
+            }).then((data) => {
                 this.loadingState(false);
-                console.log(e)
-            }
+                if(data.code == 200) {
+                    let token = data.token;
+                    AsyncStorage.setItem("webToken", token);
+                    Snackbar.show({
+                        title: '登录成功',
+                        duration: 1500,
+                    });
+                    this.toTab();
+                }else {
+                    Snackbar.show({
+                        title: `登录失败, ${data.msg}`,
+                        duration: 8000,
+                        action: {
+                            title: '知道了',
+                            color: '#4BCCBE',
+                        },
+                    })
+                }
+            }).catch((error) => {
+                this.loadingState(false);
+                console.error(error);
+            });
         }
     };
 
