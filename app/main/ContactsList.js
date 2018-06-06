@@ -11,101 +11,49 @@ import {
     SectionList,
     Image
 } from 'react-native';
+import config from '../config';
+import request from '../utils/request';
+const api = config.api;
 
 export default class ContactsList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            item: [
-                {
-                    key: 'A',
-                    data: [
-                        {
-                            key: '1',
-                            avator: require('../images/av1.jpg'),
-                            name: 'Emily Dove'
-                        },
-                        {
-                            key: '2',
-                            avator: require('../images/av2.jpg'),
-                            name: 'Ramin Nasibow'
-                        },
-                        {
-                            key: '3',
-                            avator: require('../images/av3.jpg'),
-                            name: 'Michael'
-                        },
-                        {
-                            key: '4',
-                            avator: require('../images/av4.jpg'),
-                            name: 'Rahabi Khan'
-                        }
-                    ]
-                },
-                {
-                    key: 'B',
-                    data: [
-                        {
-                            key: '1',
-                            avator: require('../images/av5.jpg'),
-                            name: 'Francis Parra'
-                        },
-                        {
-                            key: '2',
-                            avator: require('../images/av6.jpg'),
-                            name: 'Peter Joura'
-                        },
-                        {
-                            key: '3',
-                            avator: require('../images/av1.jpg'),
-                            name: 'Michael'
-                        },
-                        {
-                            key: '4',
-                            avator: require('../images/av4.jpg'),
-                            name: 'Rahabi Khan'
-                        }
-                    ]
-                },
-                {
-                    key: 'C',
-                    data: [
-                        {
-                            key: '1',
-                            avator: require('../images/av5.jpg'),
-                            name: 'Francis Parra'
-                        },
-                        {
-                            key: '2',
-                            avator: require('../images/av6.jpg'),
-                            name: 'Peter Joura'
-                        },
-                        {
-                            key: '3',
-                            avator: require('../images/av1.jpg'),
-                            name: 'Michael'
-                        },
-                        {
-                            key: '4',
-                            avator: require('../images/av4.jpg'),
-                            name: 'Rahabi Khan'
-                        }
-                    ]
-                }
-            ]
+            item: []
         }
     }
 
+    componentWillMount() {
+        this.getItems();
+    }
+
+    getItems() {
+        request(`${api}/user/all`, 'GET').then((data) => {
+            if(data.code == 200) {
+                let item = data.data || [];
+                item.map((d, j) => {
+                    d.key = j;
+                });
+                this.setState({
+                    item: [{
+                        key: 'ALL',
+                        data: item,
+                    }],
+                })
+            }
+        })
+    }
+
     render() {
-        const navigate = this.props.navigate;
+        const {navigate} = this.props.navigation;
         return (
             <View style={styles.container}>
                 <SectionList
                     sections={this.state.item}
-                    renderSectionHeader={({section}) => {
+                    renderSectionHeader={({section, k}) => {
                         if(section.key) {
                             return (
-                                <View style={styles.header}>
+                                <View style={styles.header} key={k}>
                                     <Text style={styles.headerTxt}>{section.key}</Text>
                                 </View>
                             )
@@ -113,12 +61,16 @@ export default class ContactsList extends Component {
                             return null
                         }
                     }}
-                    renderItem={({item}) => {
+                    renderItem={({item, k}) => {
                         return (
-                            <TouchableNativeFeedback>
-                                <View style={styles.row}>
-                                    <Image source={item.avator} style={styles.avator}/>
-                                    <Text style={styles.name}>{item.name}</Text>
+                            <TouchableNativeFeedback
+                                onPress={() => {
+                                    navigate('Chat', item);
+                                }}
+                            >
+                                <View style={styles.row} key={k}>
+                                    <Image source={item.avator || require('../images/av1.jpg')} style={styles.avator}/>
+                                    <Text style={styles.name}>{item.nick}</Text>
                                 </View>
                             </TouchableNativeFeedback>
                         )

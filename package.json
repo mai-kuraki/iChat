@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "jwt-decode": "^2.2.0",
+    "moment": "^2.22.2",
     "react": "16.3.1",
     "react-native": "0.55.4",
     "react-native-material-shadows": "^0.0.2",
@@ -17,7 +18,8 @@
     "react-native-tab-view": "^0.0.78",
     "react-native-vector-icons": "^4.6.0",
     "react-navigation": "^2.0.4",
-    "socket.io-client": "^2.1.1"
+    "socket.io-client": "^2.1.1",
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "babel-jest": "23.0.1",

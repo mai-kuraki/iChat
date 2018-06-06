@@ -19,6 +19,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
 import io from '../utils/socket';
 import jwtDecode from 'jwt-decode';
+import _ from 'underscore';
 export default class Chat extends Component {
     constructor(props) {
         super(props);
@@ -26,10 +27,15 @@ export default class Chat extends Component {
             input: '',
             items: [],
             profile: {},
+            fProfile: {},
         }
     }
 
     componentWillMount() {
+        let params = this.props.navigation.state.params;
+        this.setState({
+            fProfile: params,
+        });
         AsyncStorage.getItem('webToken', (error, token) => {
             if(token) {
                 let profile = jwtDecode(token);
@@ -42,12 +48,15 @@ export default class Chat extends Component {
             let items = this.state.items;
             if(message.uid != this.state.profile.uid) {
                 items.push({
-                    key: new Date().getTime(),
+                    key: _.uniqueId('chat_'),
                     message: message.message,
                     self: false,
                 });
                 this.setState({
                     items: items,
+                });
+                setTimeout(() => {
+                    this.refs.scrollView.scrollToEnd();
                 })
             }
         });
@@ -63,17 +72,20 @@ export default class Chat extends Component {
         let items = state.items;
         let profile = state.profile;
         items.push({
-            key: new Date().getTime(),
+            key: _.uniqueId('chat_'),
             message: input,
             self: true,
         });
         io.emit('sendMessage', {
-            uid: profile.uid,
+            toUid: this.state.fProfile.uid,
             message: input,
         });
         this.setState({
             input: '',
             items: items,
+        });
+        setTimeout(() => {
+            this.refs.scrollView.scrollToEnd();
         })
     }
 
@@ -96,17 +108,17 @@ export default class Chat extends Component {
                             <Feather name="chevron-left" size={20} color="#666"/>
                         </View>
                     </TouchableNativeFeedback>
-                    <View style={styles.chatTitle}><Text style={styles.chatTitleTxt}>Michael</Text></View>
+                    <View style={styles.chatTitle}><Text style={styles.chatTitleTxt}>{this.state.fProfile.nick || ''}</Text></View>
                     <View style={styles.headerIcon}>
                     </View>
                 </View>
                 <View style={styles.chatItem}>
-                    <ScrollView style={styles.scroll}>
+                    <ScrollView ref="scrollView" style={styles.scroll}>
                         {
-                            this.state.items.map((data) => {
+                            this.state.items.map((data, k) => {
                                if(data.self) {
                                    return (
-                                       <View style={styles.mine}>
+                                       <View style={styles.mine} key={k}>
                                            <View style={[styles.wrap, styles.wrapRight]}>
                                                <View style={[styles.chatContent, styles.chatContentRight]}>
                                                    <Text style={[styles.chatTxt, styles.chatTxtRight]}>{data.message}</Text>
@@ -119,7 +131,7 @@ export default class Chat extends Component {
                                    )
                                } else {
                                    return (
-                                       <View style={styles.side}>
+                                       <View style={styles.side} key={k}>
                                            <View style={styles.avator}>
                                                <Image source={require('../images/av1.jpg')} style={styles.avatorPic}/>
                                            </View>

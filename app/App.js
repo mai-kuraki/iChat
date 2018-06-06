@@ -10,9 +10,8 @@ import Tab from './main/Tab';
 import Chat from './main/Chat';
 // GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 const App = createStackNavigator({
-    Chat: {screen: Chat},
     Tab: {screen: Tab},
-
+    Chat: {screen: Chat},
     SignIn: {screen: SignIn},
     Register: {screen: Register},
 });

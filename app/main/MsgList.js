@@ -108,11 +108,7 @@ export default class MsgList extends Component {
                 <FlatList
                     data={this.state.item}
                     renderItem={({item}) =>
-                        <TouchableNativeFeedback
-                            onPress={() => {
-                                navigate('Chat');
-                            }}
-                        >
+                        <TouchableNativeFeedback>
                             <View style={styles.row}>
                                 <View style={styles.avator}>
                                     <Image source={item.avator} style={styles.avatorPic}/>

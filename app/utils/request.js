@@ -10,7 +10,7 @@ const request = (url, method, body, headers) => {
             let header = {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'WebToken': token || '',
+                'Webtoken': token || '',
             };
             if(headers) {
                 Object.assign(header, headers);
@@ -29,6 +29,7 @@ const request = (url, method, body, headers) => {
                     console.log(e);
                 }
             }).then((data) => {
+                console.log(data)
                 resolve(data);
             }).catch((error) => {
                 reject(error);

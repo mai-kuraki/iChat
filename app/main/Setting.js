@@ -8,13 +8,30 @@ import {
     Text,
     View,
     ScrollView,
-    TouchableNativeFeedback
+    TouchableNativeFeedback,
+    AsyncStorage
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-
+import jwtDecode from 'jwt-decode';
+import moment from 'moment';
+const sexMap = ['保密', '男', '女'];
 export default class Setting extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            profile: {},
+        }
+    }
+
+    componentWillMount() {
+        AsyncStorage.getItem('webToken', (error, token) => {
+            if(token) {
+                let profile = jwtDecode(token);
+                this.setState({
+                    profile: profile,
+                })
+            }
+        });
     }
 
     render() {
@@ -28,7 +45,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>账号</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>ID_Uxdispa</Text>
+                                <Text style={styles.infoText}>{this.state.profile.uid || ''}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>
@@ -37,7 +54,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>邮箱</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>exp@163.com</Text>
+                                <Text style={styles.infoText}>{this.state.profile.email || ''}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>
@@ -46,7 +63,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>性别</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>女</Text>
+                                <Text style={styles.infoText}>{sexMap[this.state.profile.sex]}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>
@@ -55,7 +72,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>生日</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>1995-02-26</Text>
+                                <Text style={styles.infoText}>{this.state.profile.birthday?moment(this.state.profile.birthday).format('YYYY-MM-DD'):'未知'}</Text>
                             </View>
                         </View>
                     </View>
