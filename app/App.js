@@ -6,11 +6,11 @@ import {
 } from 'react-navigation';
 import SignIn from './user/SignIn';
 import Register from './user/Register';
-import Tab from './main/Tab';
+import Main from './main/Main';
 import Chat from './main/Chat';
 // GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 const App = createStackNavigator({
-    Tab: {screen: Tab},
+    Main: {screen: Main},
     Chat: {screen: Chat},
     SignIn: {screen: SignIn},
     Register: {screen: Register},

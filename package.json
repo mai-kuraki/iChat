@@ -13,6 +13,7 @@
     "react-native": "0.55.4",
     "react-native-material-shadows": "^0.0.2",
     "react-native-material-textfield": "^0.12.0",
+    "react-native-push-notification": "^3.0.2",
     "react-native-snackbar": "^0.4.7",
     "react-native-svg": "^6.3.1",
     "react-native-tab-view": "^0.0.78",

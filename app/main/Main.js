@@ -11,7 +11,8 @@ import {
     TouchableNativeFeedback,
     Image,
     DrawerLayoutAndroid,
-    AsyncStorage
+    AsyncStorage,
+    AppState
 } from 'react-native';
 import MsgList from './MsgList';
 import ContactsList from './ContactsList';
@@ -19,11 +20,25 @@ import Setting from './Setting';
 import Profile from './Profile';
 import Feather from 'react-native-vector-icons/Feather';
 import {TabViewAnimated, TabBar, SceneMap} from 'react-native-tab-view';
-
+import PushNotification from 'react-native-push-notification';
+import io from '../utils/socket';
 const initialLayout = {
     height: 0,
     width: Dimensions.get('window').width,
 };
+
+PushNotification.configure({
+    onRegister: function(token) {
+        console.log( 'TOKEN:', token );
+    },
+    onNotification: function(notification) {
+        console.log( 'NOTIFICATION:', notification );
+    },
+    senderID: "YOUR GCM SENDER ID",
+    popInitialNotification: true,
+    requestPermissions: true,
+});
+
 
 export default class TabList extends Component {
     constructor(props) {
@@ -43,6 +58,17 @@ export default class TabList extends Component {
     };
 
     componentWillMount() {
+        io.on('message', (message) => {
+            let currentState = AppState.currentState;
+            console.log(currentState)
+            if(currentState) {
+                PushNotification.localNotificationSchedule({
+                    message: "My Notification Message", // (required)
+                    date: new Date(Date.now()) // in 60 secs
+                });
+            }
+        });
+
         AsyncStorage.getItem('webToken', (error, token) => {
             if(!token) {
                 const { navigate } = this.props.navigation;

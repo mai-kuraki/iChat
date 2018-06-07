@@ -24,6 +24,7 @@ export default class Chat extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            initLoad: false,
             input: '',
             items: [],
             profile: {},
@@ -72,6 +73,15 @@ export default class Chat extends Component {
         });
     }
 
+    onContentSizeChange() {
+        if(!this.state.initLoad) {
+            this.refs.scrollView.scrollToEnd();
+            this.setState({
+                initLoad: true,
+            })
+        }
+    }
+
     static navigationOptions = {
         header: null,
     };
@@ -91,7 +101,7 @@ export default class Chat extends Component {
             let inList = false,
                 position = null;
             data.map((d, k) => {
-                if(data.id == this.state.fProfile.uid) {
+                if(d.key == this.state.fProfile.uid) {
                     inList = true;
                     position = k;
                 }
@@ -106,7 +116,7 @@ export default class Chat extends Component {
                 unread: 0,
             };
             if(inList) {
-                data = data.splice(position, 1);
+                data.splice(position, 1);
             }
             data.unshift(obj);
             AsyncStorage.setItem('chatList', JSON.stringify(data));
@@ -149,7 +159,7 @@ export default class Chat extends Component {
                     <TouchableNativeFeedback
                         background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
                         onPress={() => {
-                            navigate('Tab')
+                            navigate('Main')
                         }}
                     >
                         <View style={styles.headerIcon}>
@@ -161,7 +171,9 @@ export default class Chat extends Component {
                     </View>
                 </View>
                 <View style={styles.chatItem}>
-                    <ScrollView ref="scrollView" style={styles.scroll}>
+                    <ScrollView ref="scrollView" style={styles.scroll}
+                                onContentSizeChange={this.onContentSizeChange.bind(this)}
+                    >
                         {
                             this.state.items.map((data, k) => {
                                if(data.self) {

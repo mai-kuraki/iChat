@@ -112,7 +112,7 @@ export default class Login extends Component {
 
     toTab() {
         const { navigate } = this.props.navigation;
-        navigate('Tab');
+        navigate('Main');
     }
 
     submit() {
