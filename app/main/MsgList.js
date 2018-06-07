@@ -9,96 +9,31 @@ import {
     View,
     FlatList,
     TouchableNativeFeedback,
-    Image
+    Image,
+    AsyncStorage,
+    RefreshControl
 } from 'react-native';
-
+import moment from 'moment';
 export default class MsgList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            item: [
-                {
-                    key: '0',
-                    avator: require('../images/av4.jpg'),
-                    name: 'Emly Dove',
-                    time: '09:13 AM',
-                    msg: 'More complex, multi-select example demonstrating PureComponent usage for perf optimization and avoiding bugs.',
-                    unread: 2,
-                },
-                {
-                    key: '1',
-                    avator: require('../images/av3.jpg'),
-                    name: 'Ramin Nasibow',
-                    time: '11:24 AM',
-                    msg: 'nternal state is not preserved when content scrolls out of the render window.',
-                    unread: 10,
-                },
-                {
-                    key: '2',
-                    avator: require('../images/av1.jpg'),
-                    name: 'Emly Dove',
-                    time: '09:13 AM',
-                    msg: 'More complex, multi-select example demonstrating PureComponent usage for perf optimization and avoiding bugs.',
-                    unread: 0,
-                },
-                {
-                    key: '3',
-                    avator: require('../images/av2.jpg'),
-                    name: 'Ramin Nasibow',
-                    time: '11:24 AM',
-                    msg: 'nternal state is not preserved when content scrolls out of the render window.',
-                    unread: 18,
-                },
-                {
-                    key: '4',
-                    avator: require('../images/av5.jpg'),
-                    name: 'Emly Dove',
-                    time: '09:13 AM',
-                    msg: 'More complex, multi-select example demonstrating PureComponent usage for perf optimization and avoiding bugs.',
-                    unread: 0,
-                },
-                {
-                    key: '5',
-                    avator: require('../images/av6.jpg'),
-                    name: 'Ramin Nasibow',
-                    time: '11:24 AM',
-                    msg: 'nternal state is not preserved when content scrolls out of the render window.',
-                    unread: 0,
-                },
-                {
-                    key: '6',
-                    avator: require('../images/av3.jpg'),
-                    name: 'Emly Dove',
-                    time: '09:13 AM',
-                    msg: 'More complex, multi-select example demonstrating PureComponent usage for perf optimization and avoiding bugs.',
-                    unread: 0,
-                },
-                {
-                    key: '7',
-                    avator: require('../images/av5.jpg'),
-                    name: 'Ramin Nasibow',
-                    time: '11:24 AM',
-                    msg: 'nternal state is not preserved when content scrolls out of the render window.',
-                    unread: 0,
-                },
-                {
-                    key: '8',
-                    avator: require('../images/av1.jpg'),
-                    name: 'Emly Dove',
-                    time: '09:13 AM',
-                    msg: 'More complex, multi-select example demonstrating PureComponent usage for perf optimization and avoiding bugs.',
-                    unread: 0,
-                },
-                {
-                    key: '9',
-                    avator: require('../images/av6.jpg'),
-                    name: 'Ramin Nasibow',
-                    time: '11:24 AM',
-                    msg: 'nternal state is not preserved when content scrolls out of the render window.',
-                    unread: 0,
-                },
-            ]
+            isRefreshing: false,
+            item: []
         }
+    }
+
+    componentWillMount() {
+        this.refreshItem();
+    }
+
+    refreshItem() {
+        AsyncStorage.getItem('chatList', (err, data) => {
+            data = JSON.parse(data || '[]');
+            this.setState({
+                item: data,
+            })
+        })
     }
 
     render() {
@@ -107,19 +42,34 @@ export default class MsgList extends Component {
             <View style={styles.container}>
                 <FlatList
                     data={this.state.item}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.isRefreshing}
+                            onRefresh={this.refreshItem.bind(this)}
+                            colors={['#999', '#666', '#333']}
+                            progressBackgroundColor="#FFF"
+                        />
+                    }
                     renderItem={({item}) =>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={() => {
+                                navigate('Chat', {
+                                    uid: item.key,
+                                    nick: item.name,
+                                });
+                            }}
+                        >
                             <View style={styles.row}>
                                 <View style={styles.avator}>
-                                    <Image source={item.avator} style={styles.avatorPic}/>
+                                    <Image source={item.avator || require('../images/av4.jpg')} style={styles.avatorPic}/>
                                 </View>
                                 <View style={styles.detail}>
                                     <View style={styles.nameRow}>
                                         <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
-                                        <Text style={styles.time}>{item.time}</Text>
+                                        <Text style={styles.time}>{moment(item.time).format('h:mm A')}</Text>
                                     </View>
                                     <View style={styles.msg}>
-                                        <Text style={styles.msgText} numberOfLines={1}>{item.msg}</Text>
+                                        <Text style={styles.msgText} numberOfLines={1}>{item.lastMsg}</Text>
                                         <View style={styles.unread}>
                                             {
                                                 item.unread?

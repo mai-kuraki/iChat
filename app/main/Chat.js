@@ -44,6 +44,14 @@ export default class Chat extends Component {
                 })
             }
         });
+        AsyncStorage.getItem(params.uid, (error, item) => {
+            if(!item) {
+                item = '[]';
+            }
+            this.setState({
+                items: JSON.parse(item),
+            })
+        });
         io.on('message', (message) => {
             let items = this.state.items;
             if(message.uid != this.state.profile.uid) {
@@ -56,7 +64,9 @@ export default class Chat extends Component {
                     items: items,
                 });
                 setTimeout(() => {
-                    this.refs.scrollView.scrollToEnd();
+                    if(this.refs.scrollView) {
+                        this.refs.scrollView.scrollToEnd();
+                    }
                 })
             }
         });
@@ -66,11 +76,47 @@ export default class Chat extends Component {
         header: null,
     };
 
+    saveChatRecord() {
+        let items = this.state.items || [];
+        let fProfile = this.state.fProfile;
+        AsyncStorage.setItem(fProfile.uid, JSON.stringify(items));
+    }
+
+    updateChatList(msg) {
+        AsyncStorage.getItem('chatList', (error, data) => {
+            if(!data) {
+                data = '[]';
+            }
+            data = JSON.parse(data);
+            let inList = false,
+                position = null;
+            data.map((d, k) => {
+                if(data.id == this.state.fProfile.uid) {
+                    inList = true;
+                    position = k;
+                }
+            });
+            let items = this.state.items || [];
+            let obj = {
+                key: this.state.fProfile.uid,
+                name: this.state.fProfile.nick,
+                time: new Date().getTime(),
+                avator: '',
+                lastMsg: items[items.length - 1].message,
+                unread: 0,
+            };
+            if(inList) {
+                data = data.splice(position, 1);
+            }
+            data.unshift(obj);
+            AsyncStorage.setItem('chatList', JSON.stringify(data));
+        });
+    }
+
     submit() {
         let state = this.state;
         let input = state.input;
         let items = state.items;
-        let profile = state.profile;
         items.push({
             key: _.uniqueId('chat_'),
             message: input,
@@ -86,7 +132,9 @@ export default class Chat extends Component {
         });
         setTimeout(() => {
             this.refs.scrollView.scrollToEnd();
-        })
+            this.updateChatList();
+            this.saveChatRecord();
+        });
     }
 
     render() {

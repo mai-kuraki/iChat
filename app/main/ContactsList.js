@@ -9,7 +9,8 @@ import {
     View,
     TouchableNativeFeedback,
     SectionList,
-    Image
+    Image,
+    RefreshControl
 } from 'react-native';
 import config from '../config';
 import request from '../utils/request';
@@ -19,15 +20,16 @@ export default class ContactsList extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isRefreshing: false,
             item: []
         }
     }
 
     componentWillMount() {
-        this.getItems();
+        this.refreshItem();
     }
 
-    getItems() {
+    refreshItem() {
         request(`${api}/user/all`, 'GET').then((data) => {
             if(data.code == 200) {
                 let item = data.data || [];
@@ -50,6 +52,14 @@ export default class ContactsList extends Component {
             <View style={styles.container}>
                 <SectionList
                     sections={this.state.item}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.isRefreshing}
+                            onRefresh={this.refreshItem.bind(this)}
+                            colors={['#999', '#666', '#333']}
+                            progressBackgroundColor="#FFF"
+                        />
+                    }
                     renderSectionHeader={({section, k}) => {
                         if(section.key) {
                             return (

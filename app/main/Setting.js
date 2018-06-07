@@ -9,6 +9,7 @@ import {
     View,
     ScrollView,
     TouchableNativeFeedback,
+    Switch,
     AsyncStorage
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -20,6 +21,7 @@ export default class Setting extends Component {
         super(props);
         this.state = {
             profile: {},
+            noticePush: true,
         }
     }
 
@@ -77,17 +79,23 @@ export default class Setting extends Component {
                         </View>
                     </View>
                     <View style={styles.settingItem}>
-                        <TouchableNativeFeedback>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Feather name="message-square" size={20} color="#333"/>
-                                    <Text style={styles.labelText}>信息通知</Text>
-                                </View>
-                                <View style={styles.todo}>
-                                    <Feather name="chevron-right" size={20} color="#DDD"/>
-                                </View>
+                        <View style={styles.row}>
+                            <View style={styles.label}>
+                                <Feather name="message-square" size={20} color="#333"/>
+                                <Text style={styles.labelText}>信息通知</Text>
                             </View>
-                        </TouchableNativeFeedback>
+                            <View style={styles.todo}>
+                                <Switch
+                                    value={this.state.noticePush}
+                                    onTintColor="#4BCCBE"
+                                    onValueChange={(value) => {
+                                        this.setState({
+                                            noticePush: value,
+                                        })
+                                    }}
+                                />
+                            </View>
+                        </View>
                         <TouchableNativeFeedback>
                             <View style={styles.row}>
                                 <View style={styles.label}>
