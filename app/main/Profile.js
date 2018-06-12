@@ -11,7 +11,9 @@ import {
     TouchableNativeFeedback,
     TouchableWithoutFeedback,
     Image,
-    AsyncStorage
+    AsyncStorage,
+    Modal,
+    Button
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -24,6 +26,7 @@ export default class Profile extends Component {
         super(props);
         this.state = {
             profile: {},
+            nickEdit: false,
         }
     }
 
@@ -47,14 +50,36 @@ export default class Profile extends Component {
             if(data.code == 200) {
                 AsyncStorage.removeItem('webToken');
                 const { navigate } = this.props.navigation;
+                this.props.close(false);
                 navigate('SignIn');
             }
         });
     }
 
+    nickEditDialogOpen() {
+        this.setState({nickEdit: true});
+    }
+
+    nickEditDialogClose() {
+        this.setState({nickEdit: false});
+    }
+
     render() {
         return (
             <View style={styles.container}>
+                <Modal
+                    visible={this.state.nickEdit}
+                    transparent={true}
+                    onRequestClose={this.nickEditDialogClose.bind(this)}
+                    style={{width: 300, height: 200, backgroundColor:'#FFF'}}
+                >
+                    <View
+                        style={styles.dialogBg}>
+                        <View style={styles.dialog}>
+                            <Button title='关闭Modal' onPress={()=>{this.setState({nickEdit:false})}}/>
+                        </View>
+                    </View>
+                </Modal>
                 <ScrollView style={styles.listWrap}>
                     <View style={styles.avatorWrap}>
                         <TouchableNativeFeedback
@@ -80,7 +105,9 @@ export default class Profile extends Component {
                                 <Text style={styles.buttonLabel}>修改头像</Text>
                             </View>
                         </TouchableNativeFeedback>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={this.nickEditDialogOpen.bind(this)}
+                        >
                             <View style={styles.button}>
                                 <Feather name="gitlab" size={28} color="#333"/>
                                 <Text style={styles.buttonLabel}>修改昵称</Text>
@@ -213,4 +240,17 @@ const styles = StyleSheet.create({
         color: '#999',
         marginTop: 10,
     },
+    dialogBg: {
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'rgba(0, 0, 0, 0.6)'
+    },
+    dialog: {
+        height: 300,
+        width: 360,
+        backgroundColor: '#FFF',
+        borderRadius: 3,
+        elevation: 8,
+    }
 });
