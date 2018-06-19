@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-modal-translucent')
     compile project(':react-native-push-notification')
     compile project(':react-native-snackbar')
     compile fileTree(dir: "libs", include: ["*.jar"])

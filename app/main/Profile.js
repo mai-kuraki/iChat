@@ -13,7 +13,9 @@ import {
     Image,
     AsyncStorage,
     Modal,
-    Button
+    Button,
+    DatePickerAndroid,
+    TouchableOpacity
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -64,6 +66,19 @@ export default class Profile extends Component {
         this.setState({nickEdit: false});
     }
 
+    async openDatePicker() {
+        try {
+            const {action, year, month, day} = await DatePickerAndroid.open({
+                date: new Date()
+            });
+            if (action !== DatePickerAndroid.dismissedAction) {
+                // 这里开始可以处理用户选好的年月日三个参数：year, month (0-11), day
+            }
+        } catch ({code, message}) {
+            console.warn('Cannot open date picker', message);
+        }
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -71,10 +86,8 @@ export default class Profile extends Component {
                     visible={this.state.nickEdit}
                     transparent={true}
                     onRequestClose={this.nickEditDialogClose.bind(this)}
-                    style={{width: 300, height: 200, backgroundColor:'#FFF'}}
                 >
-                    <View
-                        style={styles.dialogBg}>
+                    <View style={styles.dialogBg}>
                         <View style={styles.dialog}>
                             <Button title='关闭Modal' onPress={()=>{this.setState({nickEdit:false})}}/>
                         </View>
@@ -119,7 +132,9 @@ export default class Profile extends Component {
                                 <Text style={styles.buttonLabel}>设置性别</Text>
                             </View>
                         </TouchableNativeFeedback>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={this.openDatePicker.bind(this)}
+                        >
                             <View style={styles.button}>
                                 <Feather name="calendar" size={28} color="#333"/>
                                 <Text style={styles.buttonLabel}>设置生日</Text>
@@ -244,13 +259,13 @@ const styles = StyleSheet.create({
         flex:1,
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor:'rgba(0, 0, 0, 0.6)'
+        backgroundColor:'rgba(0, 0, 0, 0.55)'
     },
     dialog: {
         height: 300,
-        width: 360,
+        width: 340,
         backgroundColor: '#FFF',
         borderRadius: 3,
-        elevation: 8,
+        elevation: 50,
     }
 });
