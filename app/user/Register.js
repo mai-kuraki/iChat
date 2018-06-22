@@ -143,7 +143,7 @@ export default class Register extends Component {
                         duration: 8000,
                         action: {
                             title: '知道了',
-                            color: '#4BCCBE',
+                            color: '#169588',
                         },
                     })
                 }
@@ -309,7 +309,7 @@ export default class Register extends Component {
                     this.state.loading?
                         <View style={styles.loading}>
                             <ProgressBarAndroid
-                                color="#4BCCBE"
+                                color="#169588"
                                 styleAttr="Inverse"
                             />
                         </View>:null

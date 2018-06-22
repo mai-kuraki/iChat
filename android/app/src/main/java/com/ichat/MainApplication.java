@@ -3,6 +3,7 @@ package com.ichat;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import me.listenzz.modal.TranslucentModalReactPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.azendoo.reactnativesnackbar.SnackbarPackage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new PickerPackage(),
             new TranslucentModalReactPackage(),
             new ReactNativePushNotificationPackage(),
             new SnackbarPackage(),

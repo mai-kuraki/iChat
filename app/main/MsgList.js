@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     },
     unreadText: {
         height: 18,
-        backgroundColor: '#4BCCBE',
+        backgroundColor: '#169588',
         fontSize: 10,
         borderRadius: 9,
         paddingLeft: 6,

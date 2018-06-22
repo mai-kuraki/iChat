@@ -29,9 +29,9 @@ export default class Login extends Component {
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
             keyborder: false,
-            email: 'zhengliuyang@huanqiu.com',
+            email: '',
             emailError: '',
-            password: 'Aa111111',
+            password: '',
             passwordError: '',
             pwdSecure: true,
             fabScale: new Animated.Value(1),
@@ -139,7 +139,7 @@ export default class Login extends Component {
                         duration: 8000,
                         action: {
                             title: '知道了',
-                            color: '#4BCCBE',
+                            color: '#169588',
                         },
                     })
                 }
@@ -254,7 +254,7 @@ export default class Login extends Component {
                     this.state.loading?
                         <View style={styles.loading}>
                             <ProgressBarAndroid
-                                color="#4BCCBE"
+                                color="#169588"
                                 styleAttr="Inverse"
                             />
                         </View>:null

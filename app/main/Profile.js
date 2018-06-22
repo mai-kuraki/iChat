@@ -15,20 +15,63 @@ import {
     Modal,
     Button,
     DatePickerAndroid,
-    TouchableOpacity
+    ProgressBarAndroid,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Snackbar from 'react-native-snackbar';
 import config from '../config';
 import request from '../utils/request';
+import { TextField } from 'react-native-material-textfield';
+import { TextButton } from 'react-native-material-buttons';
+import ImagePicker from 'react-native-image-crop-picker';
 import jwtDecode from 'jwt-decode';
 const api = config.api;
+const sexData = [
+    {
+        key: 0,
+        label: '保密',
+    },
+    {
+        key: 1,
+        label: '男',
+    },
+    {
+        key: 2,
+        label: '女',
+    }
+];
+// const options = {
+//     title: '选择图片',
+//     takePhotoButtonTitle: '拍照',
+//     chooseFromLibraryButtonTitle: '选择图片',
+//     cancelButtonTitle: '取消',
+//     storageOptions: {
+//         skipBackup: true,
+//         path: 'images'
+//     }
+// };
+
+const options = {
+    guideLines:"on-touch",
+    cropShape:"rectangle",
+    title:'MY EXAMPLE',
+    cropMenuCropButtonTitle:'Done'
+}
 export default class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
             profile: {},
+            emailEdit: false,
             nickEdit: false,
+            sexEdit: false,
+            nickTemp: '',
+            sexTemp: 0,
+            emailTemp: '',
+            loading: false,
+            confirmLoading: false,
         }
     }
 
@@ -59,11 +102,74 @@ export default class Profile extends Component {
     }
 
     nickEditDialogOpen() {
-        this.setState({nickEdit: true});
+        let profile = this.state.profile;
+        this.setState({
+            nickEdit: true,
+            nickTemp: profile.nick,
+        });
+        setTimeout(() => {
+            this.refs.nickEdit.focus();
+        })
+    }
+
+    emailEditDialogOpen() {
+        let profile = this.state.profile;
+        this.setState({
+            emailEdit: true,
+            emailTemp: profile.email,
+        });
+        setTimeout(() => {
+            this.refs.emailEdit.focus();
+        })
+    }
+
+    sexEditDialogOpen() {
+        this.setState({
+            sexEdit: true,
+            sexTemp: this.state.profile.sex,
+        });
     }
 
     nickEditDialogClose() {
         this.setState({nickEdit: false});
+    }
+
+    emailEditDialogClose() {
+        this.setState({emailEdit: false});
+    }
+
+    sexEditDialogClose() {
+        this.setState({sexEdit: false});
+    }
+
+    sexEditDialogConfirm() {
+        this.sexEditDialogClose();
+        setTimeout(() => {
+            Snackbar.show({
+                title: '信息修改成功',
+                duration: 1500,
+            });
+        }, 1000)
+    }
+
+    nickEditDialogConfirm() {
+        this.nickEditDialogClose();
+        setTimeout(() => {
+            Snackbar.show({
+                title: '信息修改成功',
+                duration: 1500,
+            });
+        }, 1000)
+    }
+
+    emailEditDialogConfirm() {
+        this.emailEditDialogClose();
+        setTimeout(() => {
+            Snackbar.show({
+                title: '信息修改成功',
+                duration: 1500,
+            });
+        }, 1000)
     }
 
     async openDatePicker() {
@@ -72,26 +178,123 @@ export default class Profile extends Component {
                 date: new Date()
             });
             if (action !== DatePickerAndroid.dismissedAction) {
-                // 这里开始可以处理用户选好的年月日三个参数：year, month (0-11), day
             }
         } catch ({code, message}) {
             console.warn('Cannot open date picker', message);
         }
     }
 
+    cropPickAvator() {
+        ImagePicker.openPicker({
+            width: 300,
+            height: 300,
+            cropping: true
+        }).then(image => {
+            console.log(image);
+        });
+    }
+
     render() {
+        const {profile, nickEdit, loading, nickTemp, sexTemp, confirmLoading, sexEdit, emailEdit, emailTemp} = this.state;
         return (
             <View style={styles.container}>
                 <Modal
-                    visible={this.state.nickEdit}
+                    visible={nickEdit}
                     transparent={true}
                     onRequestClose={this.nickEditDialogClose.bind(this)}
                 >
+                    <TouchableWithoutFeedback onPress={this.nickEditDialogClose.bind(this)}>
                     <View style={styles.dialogBg}>
                         <View style={styles.dialog}>
-                            <Button title='关闭Modal' onPress={()=>{this.setState({nickEdit:false})}}/>
+                            <TextField
+                                ref="nickEdit"
+                                label='昵称'
+                                lineWidth={1}
+                                value={nickTemp}
+                                textColor="#333"
+                                baseColor="#666"
+                                tintColor="#333"
+                                onChangeText={ (text) => this.setState({ nickTemp: text }) }
+                            />
+                            <View style={styles.actionButtons}>
+                                <TextButton titleColor='#148D80' title='取消' titleStyle={{fontWeight: 'normal'}} onPress={this.nickEditDialogClose.bind(this)}/>
+                                <TextButton
+                                    style={{marginLeft: 8 }}
+                                    titleColor='#148D80'
+                                    titleStyle={{fontWeight: 'normal'}}
+                                    title='确认'
+                                    disabled={confirmLoading}
+                                    onPress={this.nickEditDialogConfirm.bind(this)}
+                                />
+                            </View>
                         </View>
                     </View>
+                        </TouchableWithoutFeedback>
+                </Modal>
+                <Modal
+                    visible={emailEdit}
+                    transparent={true}
+                    onRequestClose={this.emailEditDialogClose.bind(this)}
+                >
+                    <TouchableWithoutFeedback onPress={this.emailEditDialogClose.bind(this)}>
+                        <View style={styles.dialogBg}>
+                            <View style={styles.dialog}>
+                                <TextField
+                                    ref="emailEdit"
+                                    label='邮箱'
+                                    lineWidth={1}
+                                    value={emailTemp}
+                                    textColor="#333"
+                                    baseColor="#666"
+                                    tintColor="#333"
+                                    onChangeText={ (text) => this.setState({ emailTemp: text }) }
+                                />
+                                <View style={styles.actionButtons}>
+                                    <TextButton titleColor='#148D80' title='取消' titleStyle={{fontWeight: 'normal'}} onPress={this.nickEditDialogClose.bind(this)}/>
+                                    <TextButton
+                                        style={{marginLeft: 8 }}
+                                        titleColor='#148D80'
+                                        titleStyle={{fontWeight: 'normal'}}
+                                        title='确认'
+                                        disabled={confirmLoading}
+                                        onPress={this.emailEditDialogConfirm.bind(this)}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+                <Modal
+                    visible={sexEdit}
+                    transparent={true}
+                    onRequestClose={this.sexEditDialogClose.bind(this)}
+                >
+                    <TouchableWithoutFeedback onPress={this.sexEditDialogClose.bind(this)}>
+                    <View style={styles.dialogBg}>
+                        <View style={styles.selectdialog}>
+                            {
+                                sexData.map((data, k) => {
+                                    return (
+                                        <TouchableNativeFeedback key={k}
+                                            onPress={() => {
+                                                this.setState({
+                                                    sexTemp: data.key,
+                                                });
+                                                setTimeout(() => {
+                                                    this.sexEditDialogConfirm();
+                                                }, 250);
+                                            }}
+                                        >
+                                            <View style={styles.sexSelect}>
+                                                <MaterialIcons name={sexTemp == data.key?'radio-button-checked':'radio-button-unchecked'} size={20} color={sexTemp == data.key?'#148D80':'#333'}/>
+                                                <Text style={[styles.selectLabel, (sexTemp == data.key?styles.selectLabelCur:{})]}>{data.label}</Text></View>
+                                        </TouchableNativeFeedback>
+                                    )
+                                })
+                            }
+                        </View>
+                    </View>
+                    </TouchableWithoutFeedback>
                 </Modal>
                 <ScrollView style={styles.listWrap}>
                     <View style={styles.avatorWrap}>
@@ -106,13 +309,15 @@ export default class Profile extends Component {
                             </View>
                         </TouchableNativeFeedback>
                         <View style={styles.info}>
-                            <Text style={styles.nick}>{this.state.profile.nick || ''}</Text>
-                            <Text style={styles.id}>{(this.state.profile.uid || '').substr(0, 12) }</Text>
-                            <Text style={styles.email}>{this.state.profile.email || ''}</Text>
+                            <Text style={styles.nick}>{profile.nick || ''}</Text>
+                            <Text style={styles.id}>{(profile.uid || '').substr(0, 12) }</Text>
+                            <Text style={styles.email}>{profile.email || ''}</Text>
                         </View>
                     </View>
                     <View style={styles.buttonItem}>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={this.cropPickAvator.bind(this)}
+                        >
                             <View style={styles.button}>
                                 <Feather name="image" size={28} color="#333"/>
                                 <Text style={styles.buttonLabel}>修改头像</Text>
@@ -126,7 +331,9 @@ export default class Profile extends Component {
                                 <Text style={styles.buttonLabel}>修改昵称</Text>
                             </View>
                         </TouchableNativeFeedback>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={this.sexEditDialogOpen.bind(this)}
+                        >
                             <View style={styles.button}>
                                 <FontAwesome name="transgender" size={28} color="#333"/>
                                 <Text style={styles.buttonLabel}>设置性别</Text>
@@ -140,7 +347,9 @@ export default class Profile extends Component {
                                 <Text style={styles.buttonLabel}>设置生日</Text>
                             </View>
                         </TouchableNativeFeedback>
-                        <TouchableNativeFeedback>
+                        <TouchableNativeFeedback
+                            onPress={this.emailEditDialogOpen.bind(this)}
+                        >
                             <View style={styles.button}>
                                 <Feather name="at-sign" size={28} color="#333"/>
                                 <Text style={styles.buttonLabel}>设置邮箱</Text>
@@ -166,6 +375,15 @@ export default class Profile extends Component {
                         </View>
                     </TouchableNativeFeedback>
                 </View>
+                {
+                    loading?
+                        <View style={styles.loading}>
+                            <ProgressBarAndroid
+                                color="#169588"
+                                styleAttr="Inverse"
+                            />
+                        </View>:null
+                }
             </View>
         )
     }
@@ -262,10 +480,74 @@ const styles = StyleSheet.create({
         backgroundColor:'rgba(0, 0, 0, 0.55)'
     },
     dialog: {
-        height: 300,
-        width: 340,
+        width: Dimensions.get('window').width - 60,
         backgroundColor: '#FFF',
         borderRadius: 3,
         elevation: 50,
+        paddingLeft: 24,
+        paddingRight: 24,
+        paddingBottom: 15,
+        paddingTop: 15,
+    },
+    selectdialog: {
+        width: Dimensions.get('window').width - 60,
+        backgroundColor: '#FFF',
+        borderRadius: 3,
+        elevation: 50,
+        paddingTop: 10,
+        paddingBottom: 10,
+    },
+    actionButtons: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginTop: 24,
+    },
+    actionbtn: {
+        paddingLeft: 16,
+        paddingRight: 16,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+    },
+    cancel: {
+    },
+    confirm: {
+        marginLeft: 8,
+    },
+    cancelLabel: {
+        color: '#148D80',
+        fontSize: 14.5,
+    },
+    confirmLabel: {
+        color: '#148D80',
+        fontSize: 14.5,
+    },
+    loading: {
+        position: 'absolute',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        left: 0,
+        top: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 100,
+        paddingBottom: 100,
+    },
+    sexSelect: {
+        width: '100%',
+        height: 50,
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        paddingLeft: 16,
+    },
+    selectLabel: {
+        color: '#333',
+        fontSize: 16,
+        marginLeft: 10,
+    },
+    selectLabelCur: {
+        color: '#148D80',
     }
 });
