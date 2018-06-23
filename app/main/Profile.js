@@ -28,6 +28,7 @@ import { TextButton } from 'react-native-material-buttons';
 import ImagePicker from 'react-native-image-crop-picker';
 import jwtDecode from 'jwt-decode';
 const api = config.api;
+const staticHost = config.staticHost;
 const sexData = [
     {
         key: 0,
@@ -42,23 +43,7 @@ const sexData = [
         label: '女',
     }
 ];
-// const options = {
-//     title: '选择图片',
-//     takePhotoButtonTitle: '拍照',
-//     chooseFromLibraryButtonTitle: '选择图片',
-//     cancelButtonTitle: '取消',
-//     storageOptions: {
-//         skipBackup: true,
-//         path: 'images'
-//     }
-// };
 
-const options = {
-    guideLines:"on-touch",
-    cropShape:"rectangle",
-    title:'MY EXAMPLE',
-    cropMenuCropButtonTitle:'Done'
-}
 export default class Profile extends Component {
     constructor(props) {
         super(props);
@@ -68,8 +53,11 @@ export default class Profile extends Component {
             nickEdit: false,
             sexEdit: false,
             nickTemp: '',
+            nickError: '',
             sexTemp: 0,
             emailTemp: '',
+            emailError: '',
+            birthdayTemp: null,
             loading: false,
             confirmLoading: false,
         }
@@ -106,6 +94,7 @@ export default class Profile extends Component {
         this.setState({
             nickEdit: true,
             nickTemp: profile.nick,
+            nickError: '',
         });
         setTimeout(() => {
             this.refs.nickEdit.focus();
@@ -134,7 +123,8 @@ export default class Profile extends Component {
         this.setState({nickEdit: false});
     }
 
-    emailEditDialogClose() {
+    emailEditDialogClose(e) {
+        console.log(e.target)
         this.setState({emailEdit: false});
     }
 
@@ -143,33 +133,30 @@ export default class Profile extends Component {
     }
 
     sexEditDialogConfirm() {
+        this.updateProfile('sex');
         this.sexEditDialogClose();
-        setTimeout(() => {
-            Snackbar.show({
-                title: '信息修改成功',
-                duration: 1500,
-            });
-        }, 1000)
     }
 
     nickEditDialogConfirm() {
-        this.nickEditDialogClose();
-        setTimeout(() => {
-            Snackbar.show({
-                title: '信息修改成功',
-                duration: 1500,
+        if(this.state.nickTemp) {
+            this.nickEditDialogClose();
+            this.updateProfile('nick');
+        }else {
+            this.setState({
+                nickError: '请输入昵称',
             });
-        }, 1000)
+        }
     }
 
     emailEditDialogConfirm() {
-        this.emailEditDialogClose();
-        setTimeout(() => {
-            Snackbar.show({
-                title: '信息修改成功',
-                duration: 1500,
-            });
-        }, 1000)
+        if(this.state.emailTemp) {
+            this.emailEditDialogClose();
+            this.updateProfile('email');
+        }else {
+            this.setState({
+                emailError: '请输入邮箱',
+            })
+        }
     }
 
     async openDatePicker() {
@@ -177,7 +164,15 @@ export default class Profile extends Component {
             const {action, year, month, day} = await DatePickerAndroid.open({
                 date: new Date()
             });
-            if (action !== DatePickerAndroid.dismissedAction) {
+            if(action === DatePickerAndroid.dismissedAction){
+            }else{
+                let date = new Date(year,month,day);
+                this.setState({
+                    birthdayTemp: date,
+                });
+                setTimeout(() => {
+                    this.updateProfile('birthday');
+                })
             }
         } catch ({code, message}) {
             console.warn('Cannot open date picker', message);
@@ -191,15 +186,71 @@ export default class Profile extends Component {
             cropping: true
         }).then(image => {
             console.log(image);
+            if(image.path) {
+                this.uploadAvator(image.path);
+            }
         });
     }
 
+    uploadAvator(path) {
+        let formData = new FormData();
+        let file = {
+            uri: path,
+            type: 'image/jpg',
+            name: 'avator.jpg'
+        };
+        formData.append("file", file);
+        request(`${api}/user/upload`, 'POST', formData, {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data'
+        }).then((data) => {
+            console.log(this.state.profile)
+            if(data.code == 200) {
+                let profile = this.state.profile;
+                profile.avator = `${staticHost}${data.path}`;
+                this.setState({
+                    profile: profile,
+                });
+                Snackbar.show({
+                    title: '头像改成功',
+                    duration: 1500,
+                });
+            }
+        });
+    }
+
+    updateProfile(key) {
+        let data = {};
+        data[key] = this.state[`${key}Temp`];
+        console.log(data);
+    }
+
     render() {
-        const {profile, nickEdit, loading, nickTemp, sexTemp, confirmLoading, sexEdit, emailEdit, emailTemp} = this.state;
+        const {
+            profile,
+            nickEdit,
+            loading,
+            nickTemp,
+            sexTemp,
+            confirmLoading,
+            sexEdit,
+            emailEdit,
+            emailTemp,
+            nickError,
+            emailError
+        } = this.state;
+        let avator = require('../images/defaultAv2.jpg');
+        if(profile.sex == 2) {
+            avator = require('../images/defaultAv.jpg');
+        }
+        if(profile.avator) {
+            avator = {uri: `${staticHost}${profile.avator}`};
+        }
         return (
             <View style={styles.container}>
                 <Modal
                     visible={nickEdit}
+                    animationType='fade'
                     transparent={true}
                     onRequestClose={this.nickEditDialogClose.bind(this)}
                 >
@@ -211,6 +262,7 @@ export default class Profile extends Component {
                                 label='昵称'
                                 lineWidth={1}
                                 value={nickTemp}
+                                error={nickError}
                                 textColor="#333"
                                 baseColor="#666"
                                 tintColor="#333"
@@ -233,17 +285,19 @@ export default class Profile extends Component {
                 </Modal>
                 <Modal
                     visible={emailEdit}
+                    animationType='fade'
                     transparent={true}
                     onRequestClose={this.emailEditDialogClose.bind(this)}
                 >
                     <TouchableWithoutFeedback onPress={this.emailEditDialogClose.bind(this)}>
                         <View style={styles.dialogBg}>
-                            <View style={styles.dialog}>
+                            <View style={styles.dialog} ref="emailPanel">
                                 <TextField
                                     ref="emailEdit"
                                     label='邮箱'
                                     lineWidth={1}
                                     value={emailTemp}
+                                    error={emailError}
                                     textColor="#333"
                                     baseColor="#666"
                                     tintColor="#333"
@@ -302,7 +356,7 @@ export default class Profile extends Component {
                             background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
                         >
                             <View style={styles.avator}>
-                                <Image source={require('../images/av4.jpg')} style={styles.avImg}/>
+                                <Image source={avator} style={styles.avImg}/>
                                 <View style={styles.editAv}>
                                     <FontAwesome name="mars" size={14} color="#666"/>
                                 </View>
