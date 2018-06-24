@@ -13,6 +13,7 @@ import {
     AsyncStorage
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import jwtDecode from 'jwt-decode';
 import moment from 'moment';
 const sexMap = ['保密', '男', '女'];
@@ -61,7 +62,7 @@ export default class Setting extends Component {
                         </View>
                         <View style={styles.row}>
                             <View style={styles.label}>
-                                <Feather name="at-sign" size={20} color="#333"/>
+                                <FontAwesome name="transgender" size={20} color="#333"/>
                                 <Text style={styles.labelText}>性别</Text>
                             </View>
                             <View style={styles.info}>
@@ -70,7 +71,7 @@ export default class Setting extends Component {
                         </View>
                         <View style={styles.row}>
                             <View style={styles.label}>
-                                <Feather name="at-sign" size={20} color="#333"/>
+                                <Feather name="calendar" size={20} color="#333"/>
                                 <Text style={styles.labelText}>生日</Text>
                             </View>
                             <View style={styles.info}>

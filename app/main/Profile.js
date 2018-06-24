@@ -124,7 +124,7 @@ export default class Profile extends Component {
     }
 
     emailEditDialogClose(e) {
-        console.log(e.target)
+        // console.log(e.nativeEvent)
         this.setState({emailEdit: false});
     }
 
@@ -204,7 +204,6 @@ export default class Profile extends Component {
             'Accept': 'application/json',
             'Content-Type': 'multipart/form-data'
         }).then((data) => {
-            console.log(this.state.profile)
             if(data.code == 200) {
                 let profile = this.state.profile;
                 profile.avator = `${staticHost}${data.path}`;
@@ -215,14 +214,33 @@ export default class Profile extends Component {
                     title: '头像改成功',
                     duration: 1500,
                 });
+            }else {
+                Snackbar.show({
+                    title: `头像改失败, ${data.msg}`,
+                    duration: 3000,
+                });
             }
         });
     }
 
     updateProfile(key) {
-        let data = {};
-        data[key] = this.state[`${key}Temp`];
-        console.log(data);
+        let profile = {};
+        profile[key] = this.state[`${key}Temp`];
+        console.log(profile);
+        request(`${api}/user/update`, 'POST', profile).then((data) => {
+            console.log(data)
+            if(data.code == 200) {
+                Snackbar.show({
+                    title: '信息修改成功',
+                    duration: 1500,
+                });
+            }else {
+                Snackbar.show({
+                    title: `信息改失败, ${data.msg}`,
+                    duration: 3000,
+                });
+            }
+        });
     }
 
     render() {
@@ -358,7 +376,7 @@ export default class Profile extends Component {
                             <View style={styles.avator}>
                                 <Image source={avator} style={styles.avImg}/>
                                 <View style={styles.editAv}>
-                                    <FontAwesome name="mars" size={14} color="#666"/>
+                                    <FontAwesome name={profile.sex == 0?'intersex':(profile.sex == 1?'mars':'venus')} size={14} color="#666"/>
                                 </View>
                             </View>
                         </TouchableNativeFeedback>

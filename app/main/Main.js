@@ -22,6 +22,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {TabViewAnimated, TabBar, SceneMap} from 'react-native-tab-view';
 import PushNotification from 'react-native-push-notification';
 import io from '../utils/socket';
+import store from '../store';
 const initialLayout = {
     height: 0,
     width: Dimensions.get('window').width,
@@ -58,6 +59,7 @@ export default class TabList extends Component {
     };
 
     componentWillMount() {
+        console.log(store.getState())
         io.on('message', (message) => {
             let currentState = AppState.currentState;
             console.log(currentState)
