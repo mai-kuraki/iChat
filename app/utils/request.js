@@ -49,6 +49,16 @@ const request = (url, method, body, headers) => {
                             value: profile,
                         });
                     }
+                }else if(data.code == 502) {
+                    AsyncStorage.setItem('webToken', '');
+                    store.dispatch({
+                        type: TYPE.SET_WEBTOKEN,
+                        value: '',
+                    });
+                    store.dispatch({
+                        type: TYPE.SET_PROFILE,
+                        value: {},
+                    });
                 }
                 resolve(data);
             }).catch((error) => {
