@@ -4,6 +4,9 @@
 import {
     AsyncStorage
 } from 'react-native';
+import store from '../store';
+import jwtDecode from 'jwt-decode';
+import * as TYPE from '../const';
 const request = (url, method, body, headers) => {
     return new Promise((resolve, reject) => {
         AsyncStorage.getItem('webToken', (error, token) => {
@@ -34,7 +37,19 @@ const request = (url, method, body, headers) => {
                     console.log(e);
                 }
             }).then((data) => {
-                console.log(data)
+                if(data.code == 200) {
+                    if(data.hasOwnProperty('token')) {
+                        let profile = jwtDecode(data.token);
+                        store.dispatch({
+                            type: TYPE.SET_WEBTOKEN,
+                            value: data.token,
+                        });
+                        store.dispatch({
+                            type: TYPE.SET_PROFILE,
+                            value: profile,
+                        });
+                    }
+                }
                 resolve(data);
             }).catch((error) => {
                 reject(error);

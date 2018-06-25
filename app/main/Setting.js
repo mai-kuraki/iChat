@@ -9,12 +9,12 @@ import {
     View,
     ScrollView,
     TouchableNativeFeedback,
-    Switch,
-    AsyncStorage
+    Switch
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import jwtDecode from 'jwt-decode';
+import store from '../store';
 import moment from 'moment';
 const sexMap = ['保密', '男', '女'];
 export default class Setting extends Component {
@@ -27,13 +27,8 @@ export default class Setting extends Component {
     }
 
     componentWillMount() {
-        AsyncStorage.getItem('webToken', (error, token) => {
-            if(token) {
-                let profile = jwtDecode(token);
-                this.setState({
-                    profile: profile,
-                })
-            }
+        this.setState({
+            profile: store.getState().app.profile,
         });
     }
 

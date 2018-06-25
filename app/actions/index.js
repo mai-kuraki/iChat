@@ -6,3 +6,10 @@ export function setProfile(value) {
         value: value
     }
 }
+
+export function setWebtoken(value) {
+    return {
+        type: TYPE.SET_WEBTOKEN,
+        value: value
+    }
+}

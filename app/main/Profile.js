@@ -26,7 +26,7 @@ import request from '../utils/request';
 import { TextField } from 'react-native-material-textfield';
 import { TextButton } from 'react-native-material-buttons';
 import ImagePicker from 'react-native-image-crop-picker';
-import jwtDecode from 'jwt-decode';
+import store from '../store';
 const api = config.api;
 const staticHost = config.staticHost;
 const sexData = [
@@ -48,7 +48,6 @@ export default class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            profile: {},
             emailEdit: false,
             nickEdit: false,
             sexEdit: false,
@@ -61,17 +60,6 @@ export default class Profile extends Component {
             loading: false,
             confirmLoading: false,
         }
-    }
-
-    componentWillMount() {
-        AsyncStorage.getItem('webToken', (error, token) => {
-            if(token) {
-                let profile = jwtDecode(token);
-                this.setState({
-                    profile: profile,
-                })
-            }
-        });
     }
 
     static navigationOptions = {
@@ -90,7 +78,7 @@ export default class Profile extends Component {
     }
 
     nickEditDialogOpen() {
-        let profile = this.state.profile;
+        let profile = store.getState().app.profile;
         this.setState({
             nickEdit: true,
             nickTemp: profile.nick,
@@ -102,7 +90,7 @@ export default class Profile extends Component {
     }
 
     emailEditDialogOpen() {
-        let profile = this.state.profile;
+        let profile = store.getState().app.profile;
         this.setState({
             emailEdit: true,
             emailTemp: profile.email,
@@ -115,7 +103,7 @@ export default class Profile extends Component {
     sexEditDialogOpen() {
         this.setState({
             sexEdit: true,
-            sexTemp: this.state.profile.sex,
+            sexTemp: store.getState().app.profile.sex,
         });
     }
 
@@ -205,7 +193,7 @@ export default class Profile extends Component {
             'Content-Type': 'multipart/form-data'
         }).then((data) => {
             if(data.code == 200) {
-                let profile = this.state.profile;
+                let profile = store.getState().app.profile;
                 profile.avator = `${staticHost}${data.path}`;
                 this.setState({
                     profile: profile,
@@ -244,8 +232,8 @@ export default class Profile extends Component {
     }
 
     render() {
+        let profile = store.getState().app.profile;
         const {
-            profile,
             nickEdit,
             loading,
             nickTemp,

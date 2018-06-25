@@ -8,6 +8,7 @@ import SignIn from './user/SignIn';
 import Register from './user/Register';
 import Main from './main/Main';
 import Chat from './main/Chat';
+
 // GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 const App = createStackNavigator({
     Main: {screen: Main},

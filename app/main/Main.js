@@ -59,7 +59,6 @@ export default class TabList extends Component {
     };
 
     componentWillMount() {
-        console.log(store.getState())
         io.on('message', (message) => {
             let currentState = AppState.currentState;
             console.log(currentState)
