@@ -49,6 +49,7 @@ const request = (url, method, body, headers) => {
                             value: profile,
                         });
                     }
+                    AsyncStorage.setItem('webToken', data.token);
                 }else if(data.code == 502) {
                     AsyncStorage.setItem('webToken', '');
                     store.dispatch({

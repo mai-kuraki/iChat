@@ -48,6 +48,7 @@ export default class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            profile: {},
             emailEdit: false,
             nickEdit: false,
             sexEdit: false,
@@ -148,9 +149,10 @@ export default class Profile extends Component {
     }
 
     async openDatePicker() {
+        console.log(store.getState().app.profile.birthday);
         try {
             const {action, year, month, day} = await DatePickerAndroid.open({
-                date: new Date()
+                date: store.getState().app.profile.birthday
             });
             if(action === DatePickerAndroid.dismissedAction){
             }else{
@@ -260,7 +262,7 @@ export default class Profile extends Component {
                     transparent={true}
                     onRequestClose={this.nickEditDialogClose.bind(this)}
                 >
-                    <TouchableWithoutFeedback onPress={this.nickEditDialogClose.bind(this)}>
+                    <TouchableWithoutFeedback>
                     <View style={styles.dialogBg}>
                         <View style={styles.dialog}>
                             <TextField
@@ -295,7 +297,7 @@ export default class Profile extends Component {
                     transparent={true}
                     onRequestClose={this.emailEditDialogClose.bind(this)}
                 >
-                    <TouchableWithoutFeedback onPress={this.emailEditDialogClose.bind(this)}>
+                    <TouchableWithoutFeedback>
                         <View style={styles.dialogBg}>
                             <View style={styles.dialog} ref="emailPanel">
                                 <TextField
@@ -310,7 +312,7 @@ export default class Profile extends Component {
                                     onChangeText={ (text) => this.setState({ emailTemp: text }) }
                                 />
                                 <View style={styles.actionButtons}>
-                                    <TextButton titleColor='#148D80' title='取消' titleStyle={{fontWeight: 'normal'}} onPress={this.nickEditDialogClose.bind(this)}/>
+                                    <TextButton titleColor='#148D80' title='取消' titleStyle={{fontWeight: 'normal'}} onPress={this.emailEditDialogClose.bind(this)}/>
                                     <TextButton
                                         style={{marginLeft: 8 }}
                                         titleColor='#148D80'

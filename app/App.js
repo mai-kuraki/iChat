@@ -6,8 +6,8 @@ import {
 } from 'react-navigation';
 import SignIn from './user/SignIn';
 import Register from './user/Register';
-import Main from './main/Main';
-import Chat from './main/Chat';
+import Main from './contaniers/main';
+import Chat from './contaniers/chat';
 
 // GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 const App = createStackNavigator({

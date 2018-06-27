@@ -21,18 +21,13 @@ export default class Setting extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            profile: {},
             noticePush: true,
         }
     }
 
-    componentWillMount() {
-        this.setState({
-            profile: store.getState().app.profile,
-        });
-    }
 
     render() {
+        const profile = store.getState().app.profile;
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.listWrap}>
@@ -43,7 +38,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>账号</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>{this.state.profile.uid || ''}</Text>
+                                <Text style={styles.infoText}>{profile.uid || ''}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>
@@ -52,7 +47,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>邮箱</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>{this.state.profile.email || ''}</Text>
+                                <Text style={styles.infoText}>{profile.email || ''}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>
@@ -61,7 +56,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>性别</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>{sexMap[this.state.profile.sex]}</Text>
+                                <Text style={styles.infoText}>{sexMap[profile.sex]}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>
@@ -70,7 +65,7 @@ export default class Setting extends Component {
                                 <Text style={styles.labelText}>生日</Text>
                             </View>
                             <View style={styles.info}>
-                                <Text style={styles.infoText}>{this.state.profile.birthday?moment(this.state.profile.birthday).format('YYYY-MM-DD'):'未知'}</Text>
+                                <Text style={styles.infoText}>{profile.birthday?moment(profile.birthday).format('YYYY-MM-DD'):'未知'}</Text>
                             </View>
                         </View>
                     </View>
