@@ -38,6 +38,7 @@ export default class Login extends Component {
             AniHeight: new Animated.Value(150),
             loading: false,
         };
+        this.request = request(this);
     }
 
     static navigationOptions = {
@@ -120,7 +121,7 @@ export default class Login extends Component {
             password = this.state.password;
         if(this.emailReg(email) && this.passwordReg(password)) {
             this.loadingState(true);
-            request(`${api}/user/login`, 'POST', {
+            this.request(`${api}/user/login`, 'POST', {
                 email: email,
                 password: password,
             }).then((data) => {

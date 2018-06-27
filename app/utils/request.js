@@ -7,66 +7,72 @@ import {
 import store from '../store';
 import jwtDecode from 'jwt-decode';
 import * as TYPE from '../const';
-const request = (url, method, body, headers) => {
-    return new Promise((resolve, reject) => {
-        AsyncStorage.getItem('webToken', (error, token) => {
-            let header = {
-                'Webtoken': token || '',
-            };
-            if(headers) {
-                Object.assign(header, headers);
-            }else {
-                Object.assign(header, {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                })
-            }
-            let options = {
-                method: method,
-                headers: header,
-            };
-            if(method.toLocaleUpperCase() !== 'GET' && header['Content-Type'] == 'application/json') {
-                options.body = JSON.stringify(body);
-            }else {
-                options.body = body;
-            }
-            fetch(url, options).then((response) => {
-                try{
-                    return response.json();
-                }catch (e) {
-                    console.log(e);
+const request = (ctx) => {
+    return (url, method, body, headers) => {
+        return new Promise((resolve, reject) => {
+            AsyncStorage.getItem('webToken', (error, token) => {
+                let header = {
+                    'Webtoken': token || '',
+                };
+                if(headers) {
+                    Object.assign(header, headers);
+                }else {
+                    Object.assign(header, {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    });
                 }
-            }).then((data) => {
-                if(data.code == 200) {
-                    if(data.hasOwnProperty('token')) {
-                        let profile = jwtDecode(data.token);
+                let options = {
+                    method: method,
+                    headers: header,
+                };
+                if(method.toLocaleUpperCase() !== 'GET' && header['Content-Type'] == 'application/json') {
+                    options.body = JSON.stringify(body);
+                }else {
+                    options.body = body;
+                }
+                fetch(url, options).then((response) => {
+                    try{
+                        return response.json();
+                    }catch (e) {
+                        console.log(e);
+                    }
+                }).then((data) => {
+                    if(data.code == 200) {
+                        if(data.hasOwnProperty('token')) {
+                            let profile = jwtDecode(data.token);
+                            store.dispatch({
+                                type: TYPE.SET_WEBTOKEN,
+                                value: data.token,
+                            });
+                            store.dispatch({
+                                type: TYPE.SET_PROFILE,
+                                value: profile,
+                            });
+                        }
+                        AsyncStorage.setItem('webToken', data.token);
+                    }else if(data.code == 502) {
+                        if(ctx.props && ctx.props.navigation) {
+                            const { navigate } = ctx.props.navigation;
+                            navigate('SignIn');
+                        }
+                        AsyncStorage.setItem('webToken', '');
                         store.dispatch({
                             type: TYPE.SET_WEBTOKEN,
-                            value: data.token,
+                            value: '',
                         });
                         store.dispatch({
                             type: TYPE.SET_PROFILE,
-                            value: profile,
+                            value: {},
                         });
                     }
-                    AsyncStorage.setItem('webToken', data.token);
-                }else if(data.code == 502) {
-                    AsyncStorage.setItem('webToken', '');
-                    store.dispatch({
-                        type: TYPE.SET_WEBTOKEN,
-                        value: '',
-                    });
-                    store.dispatch({
-                        type: TYPE.SET_PROFILE,
-                        value: {},
-                    });
-                }
-                resolve(data);
-            }).catch((error) => {
-                reject(error);
-            })
-        });
-    })
+                    resolve(data);
+                }).catch((error) => {
+                    reject(error);
+                })
+            });
+        })
+    }
 };
 
 export default request;

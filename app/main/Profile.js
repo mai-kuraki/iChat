@@ -60,7 +60,8 @@ export default class Profile extends Component {
             birthdayTemp: null,
             loading: false,
             confirmLoading: false,
-        }
+        };
+        this.request = request(this);
     }
 
     static navigationOptions = {
@@ -68,7 +69,7 @@ export default class Profile extends Component {
     };
 
     logout() {
-        request(`${api}/user/logout`, 'GET').then((data) => {
+        this.request(`${api}/user/logout`, 'GET').then((data) => {
             if(data.code == 200) {
                 AsyncStorage.removeItem('webToken');
                 const { navigate } = this.props.navigation;
@@ -190,7 +191,7 @@ export default class Profile extends Component {
             name: 'avator.jpg'
         };
         formData.append("file", file);
-        request(`${api}/user/upload`, 'POST', formData, {
+        this.request(`${api}/user/upload`, 'POST', formData, {
             'Accept': 'application/json',
             'Content-Type': 'multipart/form-data'
         }).then((data) => {
@@ -216,8 +217,7 @@ export default class Profile extends Component {
     updateProfile(key) {
         let profile = {};
         profile[key] = this.state[`${key}Temp`];
-        console.log(profile);
-        request(`${api}/user/update`, 'POST', profile).then((data) => {
+        this.request(`${api}/user/update`, 'POST', profile).then((data) => {
             console.log(data)
             if(data.code == 200) {
                 Snackbar.show({

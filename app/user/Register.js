@@ -39,6 +39,7 @@ export default class Register extends Component {
             AniHeight: new Animated.Value(130),
             loading: false,
         };
+        this.request = request(this);
     }
 
     static navigationOptions = {
@@ -123,7 +124,7 @@ export default class Register extends Component {
             passwrod2 = this.state.password2;
         if(this.emailReg(email) && this.passwordReg(password) && this.passwordReg2(password, passwrod2)) {
             this.loadingState(true);
-            request(`${api}/user/add`, 'PUT', {
+            this.request(`${api}/user/add`, 'PUT', {
                 email: email,
                 password: password,
             }).then((data) => {

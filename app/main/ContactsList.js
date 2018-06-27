@@ -22,7 +22,8 @@ export default class ContactsList extends Component {
         this.state = {
             isRefreshing: false,
             item: []
-        }
+        };
+        this.request = request(this);
     }
 
     componentWillMount() {
@@ -30,7 +31,7 @@ export default class ContactsList extends Component {
     }
 
     refreshItem() {
-        request(`${api}/user/all`, 'GET').then((data) => {
+        this.request(`${api}/user/all`, 'GET').then((data) => {
             if(data.code == 200) {
                 let item = data.data || [];
                 item.map((d, j) => {
