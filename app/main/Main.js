@@ -158,7 +158,7 @@ export default class TabList extends Component {
                         <TouchableNativeFeedback
                             background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
                             onPress={() => {
-                                navigate('SignIn')
+                                navigate('Search');
                             }}
                         >
                             <View style={styles.headerIcon}>

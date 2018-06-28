@@ -69,7 +69,9 @@ export default class Profile extends Component {
     };
 
     logout() {
+        console.log('ccc')
         this.request(`${api}/user/logout`, 'GET').then((data) => {
+            console.log(data);
             if(data.code == 200) {
                 AsyncStorage.removeItem('webToken');
                 const { navigate } = this.props.navigation;
@@ -150,7 +152,6 @@ export default class Profile extends Component {
     }
 
     async openDatePicker() {
-        console.log(store.getState().app.profile.birthday);
         try {
             const {action, year, month, day} = await DatePickerAndroid.open({
                 date: store.getState().app.profile.birthday
@@ -176,7 +177,6 @@ export default class Profile extends Component {
             height: 300,
             cropping: true
         }).then(image => {
-            console.log(image);
             if(image.path) {
                 this.uploadAvator(image.path);
             }
@@ -218,7 +218,6 @@ export default class Profile extends Component {
         let profile = {};
         profile[key] = this.state[`${key}Temp`];
         this.request(`${api}/user/update`, 'POST', profile).then((data) => {
-            console.log(data)
             if(data.code == 200) {
                 Snackbar.show({
                     title: '信息修改成功',

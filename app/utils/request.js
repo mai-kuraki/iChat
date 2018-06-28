@@ -38,6 +38,7 @@ const request = (ctx) => {
                         console.log(e);
                     }
                 }).then((data) => {
+                    console.log(data)
                     if(data.code == 200) {
                         if(data.hasOwnProperty('token')) {
                             let profile = jwtDecode(data.token);
