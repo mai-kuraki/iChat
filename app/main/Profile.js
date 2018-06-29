@@ -69,7 +69,6 @@ export default class Profile extends Component {
     };
 
     logout() {
-        console.log('ccc')
         this.request(`${api}/user/logout`, 'GET').then((data) => {
             console.log(data);
             if(data.code == 200) {
@@ -217,7 +216,7 @@ export default class Profile extends Component {
     updateProfile(key) {
         let profile = {};
         profile[key] = this.state[`${key}Temp`];
-        this.request(`${api}/user/update`, 'POST', profile).then((data) => {
+        this.request(`${api}/user/update`, 'PUT', profile).then((data) => {
             if(data.code == 200) {
                 Snackbar.show({
                     title: '信息修改成功',

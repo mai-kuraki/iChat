@@ -22,6 +22,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Snackbar from 'react-native-snackbar';
 import UserCard from './UserCard';
 import config from '../config';
+import store from '../store';
 const api = config.api;
 const staticHost = config.staticHost;
 export default class Search extends Component {
@@ -32,7 +33,10 @@ export default class Search extends Component {
             resItem: [],
             loading: false,
             cardVisible: false,
+            applyVisible: false,
             activeId: null,
+            applyMsg: '',
+            applyId: '',
         };
         this.request = request(this);
     }
@@ -97,15 +101,102 @@ export default class Search extends Component {
         })
     }
 
+    applyClose() {
+        this.setState({
+            applyVisible: false,
+        });
+    }
+
+    applyOpen(uid) {
+        if(!uid) return;
+        this.setState({
+            applyVisible: true,
+            applyMsg: `我是${store.getState().app.profile.nick}`,
+            applyId: uid,
+        })
+    }
+
+    apply() {
+        this.cardClose();
+        setTimeout(() => {
+            this.applyClose();
+            this.request(`${api}/user/apply`, 'POST', {
+                uid: store.getState().app.profile.uid,
+                to: this.state.applyId,
+                msg: this.state.applyMsg || '',
+            }).then((data) => {
+                if(data.code == 200) {
+                    Snackbar.show({
+                        title: '申请验证发送成功, 等待对方处理',
+                        duration: 3000,
+                    });
+                }else {
+                    Snackbar.show({
+                        title: `申请验证发送失败, ${data.msg}`,
+                        duration: 3000,
+                    });
+                }
+            }).catch((e) => {
+                Snackbar.show({
+                    title: `申请验证发送失败, ${e}`,
+                    duration: 3000,
+                });
+            });
+        });
+    }
+
     render() {
         const {navigate} = this.props.navigation;
-        const {keyword, resItem, loading, cardVisible, activeId} = this.state;
+        const {keyword, resItem, loading, cardVisible, activeId, applyVisible, applyMsg} = this.state;
         return (
             <View style={styles.container}>
                 <StatusBar
                     backgroundColor="#FFF"
                     barStyle="dark-content"
                 />
+                <Modal
+                    visible={applyVisible}
+                    animationType='slide'
+                    transparent={true}
+                    onRequestClose={this.applyClose.bind(this)}
+                >
+                    <View style={styles.applyBg}>
+                        <View style={styles.applyHeader}>
+                            <View style={styles.aback}>
+                            <TouchableNativeFeedback
+                                background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
+                                onPress={this.applyClose.bind(this)}
+                            >
+                                <View style={styles.headerIcon}>
+                                    <Feather name="arrow-left" size={20} color="#666"/>
+                                </View>
+                            </TouchableNativeFeedback>
+                            <Text style={styles.alabel}>验证申请</Text>
+                            </View>
+                            <TouchableNativeFeedback
+                                background={TouchableNativeFeedback.Ripple('rgba(0, 0, 0, .2)', true)}
+                                onPress={this.apply.bind(this)}
+                            >
+                                <View style={styles.headerIcon}>
+                                    <Feather name="navigation" size={20} color="#666"/>
+                                </View>
+                            </TouchableNativeFeedback>
+                        </View>
+                        <View style={styles.inputwrap}>
+                            <Text style={styles.inputlabel}>你需要发送验证申请,等待对方通过</Text>
+                            <TextInput
+                                autoFocus={true}
+                                style={styles.ainput}
+                                value={applyMsg}
+                                onChangeText={(value) => {
+                                    this.setState({
+                                        applyMsg: value,
+                                    });
+                                }}
+                            />
+                        </View>
+                    </View>
+                </Modal>
                 <Modal
                     visible={cardVisible}
                     animationType='fade'
@@ -115,6 +206,7 @@ export default class Search extends Component {
                     <View style={styles.modalBg}>
                         <UserCard
                             uid={activeId}
+                            apply={this.applyOpen.bind(this)}
                             close={this.cardClose.bind(this)}
                         />
                     </View>
@@ -212,6 +304,10 @@ const styles = StyleSheet.create({
         alignItems:'center',
         backgroundColor:'rgba(0, 0, 0, 0.55)'
     },
+    applyBg: {
+        flex:1,
+        backgroundColor: '#FFF',
+    },
     empty: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -231,6 +327,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         flexDirection: 'row',
     },
+    applyHeader: {
+        height: 76,
+        backgroundColor: '#FFF',
+        flexDirection: 'row',
+        paddingTop: 24,
+        justifyContent: 'space-between',
+    },
+    aback: {
+        height: 52,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    alabel: {
+        fontSize: 16,
+    },
     list: {
         flex: 1,
         paddingTop: 25,
@@ -249,6 +360,7 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         paddingRight: 36,
+        fontSize: 16,
     },
     row: {
         height: 60,
@@ -294,5 +406,20 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 24,
         top: 18,
+    },
+    inputwrap: {
+        flex: 1,
+        paddingLeft: 24,
+        paddingRight: 24,
+        paddingTop: 10,
+    },
+    inputlabel: {
+        fontSize: 14,
+        color: '#999',
+        marginBottom: 8,
+    },
+    ainput: {
+        width: '100%',
+        fontSize: 16,
     }
 });

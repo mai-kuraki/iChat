@@ -16,8 +16,11 @@ import {
     ProgressBarAndroid
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import config from '../config';
+import moment from 'moment';
+import store from '../store';
 import request from '../utils/request';
 const api = config.api;
 const staticHost = config.staticHost;
@@ -56,9 +59,16 @@ export default class UserCard extends Component {
         if(profile.avator) {
             avator = {uri: `${staticHost}${profile.avator}`};
         }
+        let age = moment().diff(profile.birthday || '', 'years');
+        if(!age) {
+            age = '年龄未知';
+        }else {
+            age = `年龄 ${age}`;
+        }
+        const curUid = store.getState().app.profile.uid;
         return (
             <View style={styles.container}>
-                <View style={styles.card}>
+                <View style={[styles.card, {paddingBottom: profile.uid !== curUid?36:80}]}>
                     <View style={styles.cardBg}></View>
                     <View style={styles.avatorWrap}>
                         <TouchableNativeFeedback
@@ -76,15 +86,31 @@ export default class UserCard extends Component {
                     </View>
                     <View style={styles.info}>
                         <Text style={styles.nick}>{profile.nick || ''}</Text>
-                        <Text style={styles.id}>{(profile.uid || '').substr(0, 12) }</Text>
-                        <Text style={styles.email}>{profile.email || ''}</Text>
-                        <TouchableNativeFeedback
-                            background={TouchableNativeFeedback.Ripple('rgba(255, 255, 255, .5)', false)}
-                        >
-                            <View style={styles.button}>
-                                <Text style={styles.buttonLabel}>加好友</Text>
-                            </View>
-                        </TouchableNativeFeedback>
+                        <View style={styles.p}>
+                            <Feather name="disc" size={12}/>
+                            <Text style={styles.prop}>性别{profile.sex == 0?'保密':(profile.sex == 1?'男':'女') } {age}</Text>
+                        </View>
+                        <View style={styles.p}>
+                            <Feather name="disc" size={12}/>
+                            <Text style={styles.prop}>{(profile.uid || '').substr(0, 12) }</Text>
+                        </View>
+                        <View style={styles.p}>
+                            <Feather name="disc" size={12}/>
+                            <Text style={styles.prop}>{profile.email || ''}</Text>
+                        </View>
+                        {
+                            profile.uid !== curUid?
+                                <TouchableNativeFeedback
+                                    background={TouchableNativeFeedback.Ripple('rgba(255, 255, 255, .5)', false)}
+                                    onPress={() => {
+                                        this.props.apply(profile.uid);
+                                    }}
+                                >
+                                    <View style={styles.button}>
+                                        <Text style={styles.buttonLabel}>加好友</Text>
+                                    </View>
+                                </TouchableNativeFeedback>:null
+                        }
                     </View>
                 </View>
                 <TouchableWithoutFeedback
@@ -106,6 +132,7 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width - 60,
         height: Dimensions.get('window').height * (2 / 3),
         alignItems: 'center',
+        justifyContent: 'center'
     },
     card: {
         width: '100%',
@@ -113,10 +140,15 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         elevation: 50,
     },
+    p: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 28,
+    },
     cardBg: {
         width: '100%',
-        height: '34%',
-        backgroundColor: '#333',
+        height: 120,
+        backgroundColor: '#36495C',
         borderTopLeftRadius: 3,
         borderTopRightRadius: 3,
     },
@@ -137,7 +169,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 2,
-        marginTop: 68,
+        marginTop: 58,
     },
     buttonLabel: {
         fontSize: 16,
@@ -180,15 +212,12 @@ const styles = StyleSheet.create({
         color: '#333',
         fontWeight: 'bold',
         marginTop: -10,
+        textAlign: 'center',
+        marginBottom: 25,
     },
-    id: {
-        fontSize: 13,
-        color: '#BBB',
-        marginTop: 4,
-    },
-    email: {
+    prop: {
         fontSize: 14,
-        color: '#999',
-        marginTop: 10,
+        color: '#BBB',
+        marginLeft: 6,
     },
 });

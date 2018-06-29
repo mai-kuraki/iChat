@@ -124,7 +124,7 @@ export default class Register extends Component {
             passwrod2 = this.state.password2;
         if(this.emailReg(email) && this.passwordReg(password) && this.passwordReg2(password, passwrod2)) {
             this.loadingState(true);
-            this.request(`${api}/user/add`, 'PUT', {
+            this.request(`${api}/user/add`, 'POST', {
                 email: email,
                 password: password,
             }).then((data) => {

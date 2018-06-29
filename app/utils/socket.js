@@ -7,10 +7,10 @@ import {
 import config from '../config';
 import SocketIOClient from 'socket.io-client';
 let io = SocketIOClient(config.api, {
-    transports: ['websocket', 'polling'],
+    // transports: ['websocket', 'polling'],
     reconnection: true,
-    reconnectionDelay: 40000,
-    reconnectionAttempts: 10
+    // reconnectionDelay: 40000,
+    // reconnectionAttempts: 10
 });
 AsyncStorage.getItem('webToken', (error, token) => {
     if(token) {

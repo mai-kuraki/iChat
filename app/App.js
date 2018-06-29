@@ -12,9 +12,9 @@ import Search from './main/Search';
 
 // GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 const App = createStackNavigator({
-    Search: {screen: Search},
     Main: {screen: Main},
     Chat: {screen: Chat},
+    Search: {screen: Search},
     SignIn: {screen: SignIn},
     Register: {screen: Register},
 });
