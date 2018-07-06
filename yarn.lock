@@ -4341,10 +4341,6 @@ react-native-material-ripple@^0.7.0:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-material-shadows@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-material-shadows/-/react-native-material-shadows-0.0.2.tgz#024a50b097423325c6e51f93298c4ab1b226e7f5"
-
 react-native-material-textfield@^0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/react-native-material-textfield/-/react-native-material-textfield-0.12.0.tgz#3fba19d76ab89f67052c81e082152fc243d82a3f"

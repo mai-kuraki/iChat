@@ -13,7 +13,6 @@
     "react-native": "0.55.4",
     "react-native-image-crop-picker": "^0.20.3",
     "react-native-material-buttons": "^0.5.0",
-    "react-native-material-shadows": "^0.0.2",
     "react-native-material-textfield": "^0.12.0",
     "react-native-modal-translucent": "^1.1.3",
     "react-native-push-notification": "^3.0.2",
