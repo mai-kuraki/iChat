@@ -13,12 +13,12 @@ import HandleFriendNotice from './main/HandleFriendNotice';
 
 // GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 const App = createStackNavigator({
+    HandleFriendNotice: {screen: HandleFriendNotice},
     Main: {screen: Main},
     Chat: {screen: Chat},
     Search: {screen: Search},
     SignIn: {screen: SignIn},
     Register: {screen: Register},
-    HandleFriendNotice: {screen: HandleFriendNotice},
 });
 
 export default App;

@@ -7,13 +7,9 @@ import {
     StyleSheet,
     Text,
     View,
-    TextInput,
-    StatusBar,
-    ScrollView,
     TouchableNativeFeedback,
     TouchableWithoutFeedback,
     Image,
-    ProgressBarAndroid
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
